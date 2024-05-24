@@ -1,0 +1,21 @@
+{
+  "name": "fhtechnikum/webshop",
+  "description": "A simple application that fetches items and categories from a database",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Fhtechnikum\\Webshop\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Maria FEHER-LEHRNER",
+      "email": "pa23l004@technikum-wien.at"
+    }
+  ],
+  "require": {
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "ext-http": "*"
+  }
+}
