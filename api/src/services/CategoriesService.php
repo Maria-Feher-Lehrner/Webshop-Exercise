@@ -1,8 +1,10 @@
 <?php
 
-namespace Fhtechnikum\Webshop;
+namespace Fhtechnikum\Webshop\services;
 
+use Fhtechnikum\Webshop\DTOs;
 use Fhtechnikum\Webshop\DTOs\CategoryDTO;
+use Fhtechnikum\Webshop\repos\CategoriesRepository;
 
 class CategoriesService
 {

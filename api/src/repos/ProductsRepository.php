@@ -1,7 +1,8 @@
 <?php
 
-namespace Fhtechnikum\Webshop;
+namespace Fhtechnikum\Webshop\repos;
 
+use Fhtechnikum\Webshop\models;
 use PDO;
 
 class ProductsRepository

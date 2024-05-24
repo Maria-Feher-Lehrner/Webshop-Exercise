@@ -2,6 +2,10 @@
 
 namespace Fhtechnikum\Webshop;
 
+use Fhtechnikum\Webshop\repos\CategoriesRepository;
+use Fhtechnikum\Webshop\repos\ProductsRepository;
+use Fhtechnikum\Webshop\services\CategoriesService;
+use Fhtechnikum\Webshop\services\ProductItemsService;
 use Fhtechnikum\Webshop\views\JSONView;
 use http\Exception\InvalidArgumentException;
 use PDO;

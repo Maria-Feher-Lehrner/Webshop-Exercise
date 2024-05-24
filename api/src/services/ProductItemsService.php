@@ -1,8 +1,9 @@
 <?php
 
-namespace Fhtechnikum\Webshop;
+namespace Fhtechnikum\Webshop\services;
 
 use Fhtechnikum\Webshop\DTOs\ProductsDTO;
+use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class ProductItemsService
 {
