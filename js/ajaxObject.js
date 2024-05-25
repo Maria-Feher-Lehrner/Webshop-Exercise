@@ -58,7 +58,7 @@ class ajaxObject {
             if (item.productType === "mouth care" ||
                 item.productType === "shave" ||
                 item.productType === "wellness") {
-                listElement.addClass("disabled")
+                listElement.addClass("disabled text-body-tertiary")
                 listElement.attr("disabled", "true")
             }
         }
