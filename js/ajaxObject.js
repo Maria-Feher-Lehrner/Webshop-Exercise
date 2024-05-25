@@ -17,11 +17,11 @@ class ajaxObject {
             method: 'GET'
         })
             .done((response) => {
-                console.log(response[0]["productType"])
-                console.log(response[0]["url"])
+                //console.log(response[0]["productType"])
+                //console.log(response[0]["url"])
                 this.updateCategoriesList(response)
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 console.log(error)
             })
     }
@@ -33,47 +33,94 @@ class ajaxObject {
         })
             .done((response) => {
                 console.log(response)
-                this.updateProductsList(response)
+                let productType = response.productType
+                let products = response.products
+                this.updateProductsList(products)
+                this.createHeadline(productType)
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 console.log(error)
             })
     }
 
     updateCategoriesList(response) {
-        let id = 1
-        for (let item of response){
+        for (let item of response) {
             let listElement = $("<a>").addClass("list-group-item list-group-item-action");
             listElement.text(item.productType)
-            console.log(item.productType)
-            listElement.attr("href", item.url)
-            listElement.attr("id", id)
+            //console.log(item.productType)
+            listElement.attr("data-url", item.url)
             this.$categoriesOutput.append(listElement)
-            id++
 
             //Disables the three categories that are emtpy
             //TODO: in eigene Methode auslagern - Version weiter unten hat unerwuenschten Effekt arbeitet nicht wie erwartet
             //TODO: Methode evtl. dynamisch bauen, damit man nicht vorher schon wissen muss welche Kategorien leer sind?
-            if(item.productType == "mouth care" ||
-                item.productType == "shave" ||
-                item.productType == "wellness"){
+            //this.disableEmptyCategories(item)
+            if (item.productType === "mouth care" ||
+                item.productType === "shave" ||
+                item.productType === "wellness") {
                 listElement.addClass("disabled")
                 listElement.attr("disabled", "true")
             }
-            //this.disableEmptyCategories(item)
         }
     }
 
-    updateProductsList(response) {
-
-    }
     disableEmptyCategories(item) {
-        if(item.productType == "mouth care" ||
-            item.productType == "shave" ||
-            item.productType == "wellness"){
+        if (item.productType === "mouth care" ||
+            item.productType === "shave" ||
+            item.productType === "wellness") {
             listElement.addClass("disabled")
             listElement.attr("disabled", "true")
         }
+    }
+
+    createHeadline(productType) {
+        let headline = $("<h2>")
+        headline.text(productType.toUpperCase())
+        this.$productOutput.prepend(headline)
+    }
+
+    updateProductsList(products) {
+        this.$productOutput.empty()
+
+        //Platzhalter-Id für Bilder
+        let id = 1
+        //TODO: Backend umbauen und richtige Produkt-IDs mit Daten mitgeben
+        for (let product of products) {
+            let colDiv = this.generateCardColumn()
+            let cardDiv = this.generateCard()
+            let cardImg = this.generateCardImg(id)
+            let cardBody = this.generateCardBody(product)
+
+            cardDiv.append(cardImg)
+            cardDiv.append(cardBody)
+            colDiv.append(cardDiv)
+            this.$productOutput.append(colDiv)
+
+            id++
+        }
+    }
+
+    generateCardColumn() {
+        return $("<div>").addClass("col-sm-6 col-md-4 col-lg-3 ml-3 mr-3")
+    }
+
+    generateCard(){
+        return $("<div>").addClass("card mb-3").attr("style", "width: 18rem;")
+    }
+    generateCardImg(id) {
+        let cardImg = $("<img>").addClass("card-img-top")
+        cardImg.attr("src", "assets/" + id + ".png")
+        cardImg.attr("alt", "")
+        return cardImg
+    }
+
+    generateCardBody(product) {
+        let cardBody = $("<div>").addClass("card-body")
+
+        let p = $("<p>").addClass("card-title")
+        p.text(product.name)
+        cardBody.append(p)
+        return cardBody
     }
 
     setupEventHandlers() {
@@ -83,6 +130,4 @@ class ajaxObject {
             this.loadProductsData(url);
         });
     }
-
-
 }
