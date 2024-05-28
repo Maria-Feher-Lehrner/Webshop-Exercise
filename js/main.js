@@ -1,4 +1,4 @@
 $( document ).ready(function(){
-    let ajaxOb = new ajaxObject()
-    ajaxOb.initGui()
+    let listObject = new responseListObject()
+    listObject.initGui()
 });

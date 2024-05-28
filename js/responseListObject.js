@@ -1,6 +1,5 @@
-class ajaxObject {
+class responseListObject {
     constructor() {
-        this.$action = $()
         this.$categoriesOutput = $('#categories-output')
         this.$productOutput = $('#products-output')
 
@@ -13,7 +12,7 @@ class ajaxObject {
 
     loadCategoryData() {
         $.ajax({
-            url: "http://localhost/bb/Webshop/api/index.php?resource=types",
+            url: "api/index.php?resource=types",
             method: 'GET'
         })
             .done((response) => {
@@ -131,3 +130,15 @@ class ajaxObject {
         });
     }
 }
+
+
+//Alternative Umsetzung typeID aus URL parsen. Z. B.:
+//let url = "http://....filter-type=4"
+//url.split("=").pop()
+//url.split() gibt ein Array aus. Das heisst hier kommt wieder ein key value pair raus.
+//.pop() greift auf das letzte Element zu
+//("=")[4] greift auf das 4.= ebenfalls das letzte Element zu
+
+
+//Beispiel: Falls 1. Listelement die Ueberschrift ist, muss empty() function alle Elemente bis auf das erste loeschen
+//$list.find('.list-group-element').not(':first').remove()
