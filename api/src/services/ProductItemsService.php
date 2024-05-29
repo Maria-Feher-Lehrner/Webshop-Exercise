@@ -18,7 +18,8 @@ class ProductItemsService
     {
         $DTO = new ProductsDTO();
 
-        $DTO->productType = $this->productList[0]["productTypeName"];
+        $DTO->categoryType = $this->productList[0]["categoryName"];
+        $DTO->categoryId = $this->productList[0]["categoryId"];
         $DTO->products = $this->buildItemsList();
         $DTO->url = "http://localhost/bb/Webshop/api/index.php?resource=types";
 
@@ -33,8 +34,10 @@ class ProductItemsService
         $products = [];
         foreach ($this->productList as $product) {
             if ($product['productName'] !== null) {
-                $products[] = ['name' => $product['productName']];
-                $products[] = ['id' => $product['productId']];
+                $products[] = [
+                    'name' => $product['productName'],
+                    'id' => $product['productId']
+                ];
             }
         }
         return $products;

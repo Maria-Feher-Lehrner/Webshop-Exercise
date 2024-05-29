@@ -29,12 +29,12 @@ class ProductDbController
     {
         //initializing database connection
         $this->productDatabase = new PDO("mysql:host=localhost;dbname=bb_uebung_3; charset=utf8", "root", "");
-        $this->cartRepository = new CartRepository();
-        //first initializing only categories-respository and -service in constructor - remaining repository/service only if necessary for
-        //additional parameters ('products' & 'filter-type')
-        $this->initializingCategories($this->productDatabase);
 
+        //initializing repositories that need to be accessible from the start
+        $this->initializeCart();
+        $this->initializeCategories($this->productDatabase);
 
+        //adding cart to session
         if (!isset($_SESSION['shopping_cart'])) {
             $_SESSION['shopping_cart'] = $this->cartRepository->createNewCart();
         }
@@ -46,6 +46,24 @@ class ProductDbController
     }
 
     public function route(): void
+    {
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                $this->handleGetRequest();
+                break;
+            case 'POST':
+                $this->handlePostRequest();
+                break;
+            case 'DELETE':
+                $this->handleDeleteRequest();
+                break;
+            default:
+                throw new InvalidArgumentException("Unsupported HTTP request method");
+        }
+    }
+
+
+    private function handleGetRequest(): void
     {
         try {
             if (!isset($_GET["resource"])) {
@@ -63,9 +81,13 @@ class ProductDbController
                         throw new \InvalidArgumentException("Invalid filter-type parameter");
                     }
                     //initializing remaining repository and service for case 'products' only if necessary
-                    $this->initializingProducts($this->productDatabase, $filterType);
+                    $this->initializeProducts($this->productDatabase, $filterType);
                     $this->result = $this->productItemsService->provideItemsResult();
                     break;
+                case "cart":
+                    //TODO: $_GET fuer cart implementieren
+                    //$this->result = $this->cartService->getCartContents();
+                    //break;
                 default:
                     throw new InvalidArgumentException("Invalid value for resource parameter");
             }
@@ -79,13 +101,30 @@ class ProductDbController
         }
     }
 
-    private function initializingCategories(PDO $productDatabase): void {
+    private function handlePostRequest(): void
+    {
+
+    }
+
+    private function handleDeleteRequest(): void
+    {
+
+    }
+
+    private function initializeCategories(PDO $productDatabase): void
+    {
         $this->categoriesRepository = new CategoriesRepository($this->productDatabase);
         $this->categoriesService = new CategoriesService($this->categoriesRepository);
     }
 
-    private function initializingProducts(PDO $productDatabase, int $filterType): void {
+    private function initializeProducts(PDO $productDatabase, int $filterType): void
+    {
         $this->productsRepository = new ProductsRepository($this->productDatabase, $filterType);
         $this->productItemsService = new ProductItemsService($this->productsRepository);
+    }
+
+    private function initializeCart(): void
+    {
+        $this->cartRepository = new CartRepository();
     }
 }

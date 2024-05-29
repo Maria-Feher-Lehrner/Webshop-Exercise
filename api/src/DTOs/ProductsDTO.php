@@ -4,7 +4,8 @@ namespace Fhtechnikum\Webshop\DTOs;
 
 class ProductsDTO
 {
-    public string $productType;
+    public string $categoryType;
+    public string $categoryId;
     public array $products;
     public string $url;
 }

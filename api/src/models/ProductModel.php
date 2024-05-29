@@ -5,7 +5,7 @@ namespace Fhtechnikum\Webshop\models;
 class ProductModel
 {
     public int $productId;
-    public int $typeId;
+    public int $categoryId;
     public string $name;
-    public string $typeName;
+    public string $categoryName;
 }
