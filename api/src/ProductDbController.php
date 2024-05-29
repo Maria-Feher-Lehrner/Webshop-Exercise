@@ -2,8 +2,10 @@
 
 namespace Fhtechnikum\Webshop;
 
+use Fhtechnikum\Webshop\repos\CartRepository;
 use Fhtechnikum\Webshop\repos\CategoriesRepository;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
+use Fhtechnikum\Webshop\services\CartService;
 use Fhtechnikum\Webshop\services\CategoriesService;
 use Fhtechnikum\Webshop\services\ProductItemsService;
 use Fhtechnikum\Webshop\views\JSONView;
@@ -16,7 +18,9 @@ class ProductDbController
     private CategoriesRepository $categoriesRepository;
     private ?ProductsRepository $productsRepository = null;
     private CategoriesService $categoriesService;
+    private CartRepository $cartRepository;
     private ?ProductItemsService $productItemsService = null;
+    private CartService $cartService;
     private $result;
     private JSONView $jsonView;
 
@@ -25,10 +29,18 @@ class ProductDbController
     {
         //initializing database connection
         $this->productDatabase = new PDO("mysql:host=localhost;dbname=bb_uebung_3; charset=utf8", "root", "");
-
+        $this->cartRepository = new CartRepository();
         //first initializing only categories-respository and -service in constructor - remaining repository/service only if necessary for
         //additional parameters ('products' & 'filter-type')
         $this->initializingCategories($this->productDatabase);
+
+
+        if (!isset($_SESSION['shopping_cart'])) {
+            $_SESSION['shopping_cart'] = $this->cartRepository->createNewCart();
+        }
+
+        //TODO: cartService erst später initialisieren, wenn gebraucht
+        //$this->cartService = new CartService($productsRepository, $_SESSION['shopping_cart']);
 
         $this->jsonView = new JSONView();
     }
