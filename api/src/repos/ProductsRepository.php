@@ -22,7 +22,7 @@ class ProductsRepository
      */
     public function getProducts(): array
     {
-        $query = "SELECT t.name AS productTypeName, p.name AS productName 
+        $query = "SELECT t.name AS productTypeName, p.name AS productName, p.id AS productId 
         FROM product_types t 
         LEFT JOIN products p ON t.id = p.id_product_types
         WHERE t.id = :id";

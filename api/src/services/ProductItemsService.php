@@ -34,6 +34,7 @@ class ProductItemsService
         foreach ($this->productList as $product) {
             if ($product['productName'] !== null) {
                 $products[] = ['name' => $product['productName']];
+                $products[] = ['id' => $product['productId']];
             }
         }
         return $products;
