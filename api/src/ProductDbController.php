@@ -15,7 +15,7 @@ use PDO;
 class ProductDbController
 {
     private PDO $productDatabase;
-    private CategoriesRepository $categoriesRepository;
+    //private CategoriesRepository $categoriesRepository;
     private ?ProductsRepository $productsRepository = null;
     private CategoriesService $categoriesService;
     private CartRepository $cartRepository;
@@ -29,10 +29,10 @@ class ProductDbController
     {
         //initializing database connection
         $this->productDatabase = new PDO("mysql:host=localhost;dbname=bb_uebung_3; charset=utf8", "root", "");
-
-        //initializing repositories that need to be accessible from the start
-        $this->initializeCart();
-        $this->initializeCategories($this->productDatabase);
+        //initializing repositories and services that need to be accessible from the start
+        $this->productsRepository = new ProductsRepository($this->productDatabase);
+        $this->categoriesService = new CategoriesService($this->productsRepository);
+        $this->cartRepository = new CartRepository();
 
         //adding cart to session
         if (!isset($_SESSION['shopping_cart'])) {
@@ -80,8 +80,9 @@ class ProductDbController
                     if ($filterType === false) {
                         throw new \InvalidArgumentException("Invalid filter-type parameter");
                     }
-                    //initializing remaining repository and service for case 'products' only if necessary
-                    $this->initializeProducts($this->productDatabase, $filterType);
+
+                    //initializing productItemsService only when needed
+                    $this->productItemsService = new ProductItemsService($filterType, $this->productsRepository);
                     $this->result = $this->productItemsService->provideItemsResult();
                     break;
                 case "cart":
@@ -109,22 +110,5 @@ class ProductDbController
     private function handleDeleteRequest(): void
     {
 
-    }
-
-    private function initializeCategories(PDO $productDatabase): void
-    {
-        $this->categoriesRepository = new CategoriesRepository($this->productDatabase);
-        $this->categoriesService = new CategoriesService($this->categoriesRepository);
-    }
-
-    private function initializeProducts(PDO $productDatabase, int $filterType): void
-    {
-        $this->productsRepository = new ProductsRepository($this->productDatabase, $filterType);
-        $this->productItemsService = new ProductItemsService($this->productsRepository);
-    }
-
-    private function initializeCart(): void
-    {
-        $this->cartRepository = new CartRepository();
     }
 }

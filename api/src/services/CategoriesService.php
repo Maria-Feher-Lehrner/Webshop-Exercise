@@ -4,13 +4,13 @@ namespace Fhtechnikum\Webshop\services;
 
 use Fhtechnikum\Webshop\DTOs;
 use Fhtechnikum\Webshop\DTOs\CategoryDTO;
-use Fhtechnikum\Webshop\repos\CategoriesRepository;
+use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class CategoriesService
 {
     private array $categoryList;
 
-    public function __construct(CategoriesRepository $repository){
+    public function __construct(ProductsRepository $repository){
         $this->categoryList = $repository->getAllCategories();
     }
 

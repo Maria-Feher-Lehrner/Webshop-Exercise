@@ -7,11 +7,13 @@ use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class ProductItemsService
 {
+    private int $typeId;
     private array $productList;
 
-    public function __construct(ProductsRepository $productsRepository)
+    public function __construct(int $typeId, ProductsRepository $productsRepository)
     {
-        $this->productList = $productsRepository->getProducts();
+        $this->typeId = $typeId;
+        $this->productList = $productsRepository->getProducts($this->typeId);
     }
 
     public function provideItemsResult(): ProductsDTO
