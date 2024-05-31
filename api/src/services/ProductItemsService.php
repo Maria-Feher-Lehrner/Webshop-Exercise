@@ -36,7 +36,7 @@ class ProductItemsService
             if ($product['productName'] !== null) {
                 $products[] = [
                     'name' => $product['productName'],
-                    'price' => $product['price'],
+                    'price' => $product['productPrice'],
                     'id' => $product['productId']
                 ];
             }
