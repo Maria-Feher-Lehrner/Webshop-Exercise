@@ -2,11 +2,12 @@
 
 namespace Fhtechnikum\Webshop;
 
+use Fhtechnikum\Webshop\DTOs\CartDTO;
 use Fhtechnikum\Webshop\DTOs\CategoryDTO;
 use Fhtechnikum\Webshop\DTOs\ProductDTO;
 use Fhtechnikum\Webshop\DTOs\ProductListDTO;
-use Fhtechnikum\Webshop\repos\CartRepository;
-use Fhtechnikum\Webshop\repos\CategoriesRepository;
+//use Fhtechnikum\Webshop\repos\CartRepository;
+//use Fhtechnikum\Webshop\repos\CategoriesRepository;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 use Fhtechnikum\Webshop\services\CartService;
 use Fhtechnikum\Webshop\services\CategoriesService;
@@ -21,9 +22,10 @@ class ProductDbController
     //private CategoriesRepository $categoriesRepository;
     private ?ProductsRepository $productsRepository = null;
     private CategoriesService $categoriesService;
-    private CartRepository $cartRepository;
+    //private CartRepository $cartRepository;
     private ?ProductItemsService $productItemsService = null;
     private CartService $cartService;
+    //TODO code umbauen und result entfernen
     private $result;
     private JSONView $jsonView;
 
@@ -35,14 +37,14 @@ class ProductDbController
         //initializing repositories and services that need to be accessible from the start
         $this->productsRepository = new ProductsRepository($this->productDatabase);
         $this->categoriesService = new CategoriesService($this->productsRepository);
-        $this->cartRepository = new CartRepository($this->productDatabase);
+        //$this->cartRepository = new CartRepository($this->productDatabase);
 
         //Checking if there is already a shopping cart in running session. If not: adding cart to session
         if (!isset($_SESSION['shopping_cart'])) {
-            $_SESSION['shopping_cart'] = $this->cartRepository->createNewCart();
+            $_SESSION['shopping_cart'] = $this->productsRepository->createNewCart();
         }
         //initializing CartService after shopping cart is added to session
-        $this->cartService = new CartService($this->cartRepository, $_SESSION['shopping_cart']);
+        $this->cartService = new CartService($this->productsRepository, $_SESSION['shopping_cart']);
 
         $this->jsonView = new JSONView();
     }
@@ -90,14 +92,11 @@ class ProductDbController
                     $this->buildProductsList($this->productItemsService);
                     break;
                 case "cart":
-                    //TODO: $_GET fuer cart implementieren
-                    //$this->result = $this->cartService->getCartContents();
-                    //break;
+                    $this->buildCartContent($this->cartService);
+                    break;
                 default:
                     throw new InvalidArgumentException("Invalid value for resource parameter");
             }
-            //TODO: am ende noch einzelne functions so umbauen, dass jede eine jsonView auswirft, statt hier über result
-            $this->jsonView->output($this->result);
         } catch (InvalidArgumentException $e) {
             http_response_code(400);
             $this->jsonView->output(['error' => $e->getMessage()]);
@@ -109,23 +108,55 @@ class ProductDbController
 
     private function handlePostRequest(): void
     {
-        if (!isset($_GET["resource"]) || !isset($_GET['articleId'])) {
-            throw new \InvalidArgumentException("Missing required parameters");
+        try {
+            if (!isset($_GET["resource"]) || !isset($_GET['articleId'])) {
+                throw new \InvalidArgumentException("Missing required parameters");
+            }
+
+            $resource = strtolower($_GET['resource']);
+            $productId = filter_var($_GET['articleId'], FILTER_VALIDATE_INT);
+
+            if ($resource !== "cart" || $productId === false) {
+                throw new \InvalidArgumentException("Invalid parameters");
+            }
+
+            $this->cartService->addProductToCart($productId);
+            http_response_code(200);
+            $this->jsonView->output(['state' => 'OK']);
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            $this->jsonView->output(['state' => 'ERROR', 'error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            $this->jsonView->output(['state' => 'ERROR', 'error' => 'An unexpected error occurred']);
         }
 
-        $resource = strtolower($_GET['resource']);
-        $productId = filter_var($_GET['articleId'], FILTER_VALIDATE_INT);
-
-        if ($resource !== "cart" || $productId === false) {
-            throw new \InvalidArgumentException("Invalid parameters");
-
-        }
-        $this->cartService->addProductToCart($productId);
     }
 
     private function handleDeleteRequest(): void
     {
+        try {
+            if (!isset($_GET["resource"]) || !isset($_GET['articleId'])) {
+                throw new \InvalidArgumentException("Missing required parameters");
+            }
 
+            $resource = strtolower($_GET['resource']);
+            $productId = filter_var($_GET['articleId'], FILTER_VALIDATE_INT);
+
+            if ($resource !== "cart" || $productId === false) {
+                throw new \InvalidArgumentException("Invalid parameters");
+            }
+
+            $this->cartService->removeProduct($productId);
+            http_response_code(200);
+            $this->jsonView->output(['state' => 'OK']);
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            $this->jsonView->output(['state' => 'ERROR', 'error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            $this->jsonView->output(['state' => 'ERROR', 'error' => 'An unexpected error occurred']);
+        }
     }
 
     private function buildCategoryList(): void
@@ -136,35 +167,37 @@ class ProductDbController
             $dtoList[] = CategoryDTO::map($item);
             //TODO: Interface!
         }
-        $this->result = $dtoList;
+        $this->jsonView->output($dtoList);
     }
 
     private function buildProductsList($service): void
     {
-        $productList = $service->mapAndReturnItemsList();
+        $productList = $service->getProductModelList();
         $dtoList = [];
         foreach ($productList as $item) {
             $dtoList[] = ProductDTO::map($item);
         }
-        $productListDTO = $this->mapProductListDTO($productList, $dtoList);
-        $this->result = $productListDTO;
+        $productListDTO = $this->mapProductListDTO($productList, $dtoList, $service);
+        $this->jsonView->output($productListDTO);
     }
 
-    private function mapProductListDTO(array $productList, array $dtoList): ProductListDTO
+    private function mapProductListDTO(array $productList, array $dtoList, $service): ProductListDTO
     {
+        $categoryInfo = $service->getCategoryInfo();
         $productListDTO = new ProductListDTO();
 
-        if (isset($productList[0])) {
-            $productListDTO->categoryName = $productList[0]->categoryName;
-            $productListDTO->categoryId = $productList[0]->categoryId;
-        } else {
-            $productListDTO->categoryName = "";
-            $productListDTO->categoryId = 0;
-        }
-
+        $productListDTO->categoryName = $categoryInfo['categoryName'];
+        $productListDTO->categoryId = $categoryInfo['categoryId'];
         $productListDTO->products = $dtoList;
         $productListDTO->url = "http://localhost/bb/Webshop/api/index.php?resource=types";
 
         return $productListDTO;
+    }
+
+    private function buildCartContent(CartService $cartService): void
+    {
+        $shoppingCart = $cartService->getShoppingCart();
+        $cartDTO = CartDTO::map($shoppingCart);
+        $this->jsonView->output($cartDTO);
     }
 }

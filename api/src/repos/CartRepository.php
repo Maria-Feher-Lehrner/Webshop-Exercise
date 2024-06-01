@@ -1,8 +1,9 @@
 <?php
-
+/*
 namespace Fhtechnikum\Webshop\repos;
 
 use Fhtechnikum\Webshop\models\CartModel;
+use Fhtechnikum\Webshop\models\ProductModel;
 use PDO;
 
 class CartRepository
@@ -26,4 +27,27 @@ class CartRepository
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
-}
+
+    /**
+     * @return array|models\ProductModel[]
+
+    public function mapProducts(): array
+    {
+        $productList = $this->getAllProducts();
+        $productModelList = [];
+        foreach ($productList as $product) {
+            if ($product['productName'] !== null) {
+                $productModel = new ProductModel();
+                $productModel->name = $product['productName'];
+                $productModel->productId = $product['productId'];
+                $productModel->price = $product['productPrice'];
+                $productModel->categoryName = $product['categoryName'];
+                $productModel->categoryId = $product['categoryId'];
+
+                $productModelList[] = $productModel;
+            }
+        }
+        return $productModelList;
+    }
+
+}*/
