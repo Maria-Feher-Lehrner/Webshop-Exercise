@@ -2,8 +2,6 @@
 
 namespace Fhtechnikum\Webshop\services;
 
-use Fhtechnikum\Webshop\DTOs\ProductListDTO;
-use Fhtechnikum\Webshop\models\ProductModel;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class ProductItemsService

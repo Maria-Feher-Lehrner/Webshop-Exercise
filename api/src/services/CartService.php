@@ -5,7 +5,6 @@ namespace Fhtechnikum\Webshop\services;
 use Fhtechnikum\Webshop\models\CartModel;
 use Fhtechnikum\Webshop\models\CartProductModel;
 use Fhtechnikum\Webshop\models\ProductModel;
-use Fhtechnikum\Webshop\repos\CartRepository;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class CartService
@@ -18,9 +17,7 @@ class CartService
     {
         $this->allProducts = $productsRepository->getAllProducts();
         $this->allProductModels = $productsRepository->getMappedProducts($this->allProducts);
-        //print_r("All products: $this->allProducts");
         $this->shoppingCart = $shoppingCart;
-        //print_r($shoppingCart);
     }
 
     public function addProductToCart(int $productId): void
@@ -29,14 +26,12 @@ class CartService
         if ($product === null) {
             throw new \InvalidArgumentException("Product not found");
         }
-        print_r($product);
 
         // Check if the product is already in the cart
         foreach ($this->shoppingCart->getProducts() as $cartProduct) {
             if ($cartProduct->productModel->productId === $productId) {
                 // If the product is already in the cart, increase the amount
                 $cartProduct->amount += 1;
-                print_r($this->shoppingCart);
                 return;
             }
         }
@@ -45,8 +40,6 @@ class CartService
         $cartProduct = new CartProductModel($product);
         $cartProduct->amount = 1;
         $this->shoppingCart->addProduct($cartProduct);
-
-        print_r($this->shoppingCart);
     }
 
     public function removeProduct(int $productId): void
@@ -58,7 +51,6 @@ class CartService
                 $cartProduct->amount -= 1;
                 $this->deleteIfAmountZero($cartProduct);
 
-                print_r($this->shoppingCart);
                 return;
             }
         }
@@ -76,16 +68,6 @@ class CartService
         }
     }
 
-    private function isProductInCart(int $productId): bool
-    {
-        foreach ($this->shoppingCart->getProducts() as $cartProduct) {
-            if ($cartProduct->productModel->productId == $productId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private function findProduct(int $productId): ?ProductModel
     {
         foreach ($this->allProductModels as $productModel) {
@@ -94,20 +76,5 @@ class CartService
             }
         }
         return null;
-    }
-
-
-    private function mapProduct(int $productId): CartProductModel
-    {
-        $product = $this->findProduct($productId);
-        $cartProduct = new CartProductModel($product);
-
-        $cartProduct->name = $this->allProducts[$productId]['productName'];
-        $cartProduct->productId = $this->allProducts[$productId]['productId'];
-        $cartProduct->price = $this->allProducts[$productId]['productPrice'];
-        //print_r($product);
-        //print_r($cartProduct);
-
-        return $cartProduct;
     }
 }

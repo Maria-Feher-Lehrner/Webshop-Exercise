@@ -2,10 +2,8 @@
 
 namespace Fhtechnikum\Webshop\services;
 
-use Fhtechnikum\Webshop\DTOs;
 use Fhtechnikum\Webshop\models;
 use Fhtechnikum\Webshop\models\CategoryModel;
-use Fhtechnikum\Webshop\DTOs\CategoryDTO;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class CategoriesService
