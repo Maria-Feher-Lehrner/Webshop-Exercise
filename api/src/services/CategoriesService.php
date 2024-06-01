@@ -3,6 +3,8 @@
 namespace Fhtechnikum\Webshop\services;
 
 use Fhtechnikum\Webshop\DTOs;
+use Fhtechnikum\Webshop\models;
+use Fhtechnikum\Webshop\models\CategoryModel;
 use Fhtechnikum\Webshop\DTOs\CategoryDTO;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 
@@ -15,18 +17,18 @@ class CategoriesService
     }
 
     /**
-     * @return array|DTOs\CategoryDTO[]
+     * @return array|models\CategoryModel[]
      */
-    public function provideCategoryResult(): array{
-        $DTOList = [];
+    public function mapAndProvideCategoryResult(): array{
+        $categoryModelList = [];
 
         foreach($this->categoryList as $category){
-            $resultDTO = new CategoryDTO();
-            $resultDTO->productType = $category['name'];
-            $resultDTO->url = "http://localhost/bb/Webshop/api/index.php?resource=products&filter-type=".$category['id'];
-            $DTOList[] = $resultDTO;
+            $CategoryModel = new CategoryModel();
+            $CategoryModel->name = $category['name'];
+            $CategoryModel->id = $category['id'];
+            $categoryModelList[] = $CategoryModel;
         }
 
-        return $DTOList;
+        return $categoryModelList;
     }
 }

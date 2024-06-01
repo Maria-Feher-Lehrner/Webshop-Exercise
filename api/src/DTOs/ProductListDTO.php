@@ -2,9 +2,9 @@
 
 namespace Fhtechnikum\Webshop\DTOs;
 
-class ProductsDTO
+class ProductListDTO
 {
-    public string $categoryType;
+    public string $categoryName;
     public string $categoryId;
     public array $products;
     public string $url;

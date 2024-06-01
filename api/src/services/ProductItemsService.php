@@ -2,7 +2,8 @@
 
 namespace Fhtechnikum\Webshop\services;
 
-use Fhtechnikum\Webshop\DTOs\ProductsDTO;
+use Fhtechnikum\Webshop\DTOs\ProductListDTO;
+use Fhtechnikum\Webshop\models\ProductModel;
 use Fhtechnikum\Webshop\repos\ProductsRepository;
 
 class ProductItemsService
@@ -16,33 +17,36 @@ class ProductItemsService
         $this->productList = $productsRepository->getProducts($this->typeId);
     }
 
-    public function provideItemsResult(): ProductsDTO
+    /*public function provideItemsResult(): ProductListDTO
     {
-        $DTO = new ProductsDTO();
+        $DTO = new ProductListDTO();
 
         $DTO->categoryType = $this->productList[0]["categoryName"];
         $DTO->categoryId = $this->productList[0]["categoryId"];
-        $DTO->products = $this->buildItemsList();
+        $DTO->products = $this->mapAndReturnItemsList();
         $DTO->url = "http://localhost/bb/Webshop/api/index.php?resource=types";
 
         return $DTO;
-    }
+    }*/
 
     /**
-     * @return array
+     * @return array|models\ProductModel[]
      */
-    public function buildItemsList(): array
+    public function mapAndReturnItemsList(): array
     {
-        $products = [];
+        $productModelList = [];
         foreach ($this->productList as $product) {
             if ($product['productName'] !== null) {
-                $products[] = [
-                    'name' => $product['productName'],
-                    'price' => $product['productPrice'],
-                    'id' => $product['productId']
-                ];
+                $productModel = new ProductModel();
+                $productModel->name = $product['productName'];
+                $productModel->productId = $product['productId'];
+                $productModel->price = $product['productPrice'];
+                $productModel->categoryName = $product['categoryName'];
+                $productModel->categoryId = $product['categoryId'];
+
+                $productModelList[] = $productModel;
             }
         }
-        return $products;
+        return $productModelList;
     }
 }
