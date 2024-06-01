@@ -18,5 +18,4 @@ class ProductDTO
 
         return $productDTO;
     }
-
 }

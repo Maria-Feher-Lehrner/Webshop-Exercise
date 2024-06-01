@@ -35,5 +35,4 @@ class ProductItemsService
         }
         return ['categoryName' => '', 'categoryId' => 0];
     }
-
 }

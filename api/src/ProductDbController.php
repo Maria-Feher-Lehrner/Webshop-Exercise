@@ -99,7 +99,6 @@ class ProductDbController
         $dtoList = [];
         foreach ($categoryList as $item) {
             $dtoList[] = CategoryDTO::map($item);
-            //TODO: Interface!
         }
         $this->jsonView->output($dtoList);
     }
