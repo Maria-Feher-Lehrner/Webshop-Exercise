@@ -81,21 +81,16 @@ class responseListObject {
     updateProductsList(products) {
         this.$productOutput.empty()
 
-        //Platzhalter-Id für Bilder
-        let id = 1
-        //TODO: Backend umbauen und richtige Produkt-IDs mit Daten mitgeben
         for (let product of products) {
             let colDiv = this.generateCardColumn()
             let cardDiv = this.generateCard()
-            let cardImg = this.generateCardImg(id)
+            let cardImg = this.generateCardImg(product.productId)
             let cardBody = this.generateCardBody(product)
 
             cardDiv.append(cardImg)
             cardDiv.append(cardBody)
             colDiv.append(cardDiv)
             this.$productOutput.append(colDiv)
-
-            id++
         }
     }
 
@@ -108,19 +103,28 @@ class responseListObject {
     }
     generateCardImg(id) {
         let cardImg = $("<img>").addClass("card-img-top")
-        cardImg.attr("src", "assets/" + id + ".png")
-        cardImg.attr("alt", "")
+        cardImg.attr("src", "assets/" + id + ".png").attr("alt", "")
         return cardImg
     }
 
     generateCardBody(product) {
         let cardBody = $("<div>").addClass("card-body")
 
-        let p = $("<p>").addClass("card-title")
-        p.text(product.name)
-        cardBody.append(p)
+        let title = $("<p>").addClass("card-text")
+        title.text(product.name)
+        let price = $("<p>").addClass("card-text")
+        price.text("€ " + product.price)
+
+        let button = $("<a>").addClass("btn btn-primary addToCart").attr("id", product.productId)
+        button.attr("href", "#")
+        button.text("In den Warenkorb")
+
+        cardBody.append(title)
+        cardBody.append(price)
+        cardBody.append(button)
         return cardBody
     }
+
 
     setupEventHandlers() {
         this.$categoriesOutput.on('click', 'a', (event) => {

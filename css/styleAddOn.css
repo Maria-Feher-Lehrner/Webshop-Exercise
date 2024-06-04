@@ -1,0 +1,11 @@
+#webshop, #warenkorb {
+    transition: all 0.3s ease;
+}
+
+.show-cart #webshop {
+    display: block;
+}
+
+.show-cart #warenkorb {
+    display: block;
+}
