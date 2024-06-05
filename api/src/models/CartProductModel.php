@@ -16,9 +16,8 @@ class CartProductModel
         $this->productModel = $productModel;
     }
 
-    /*public function getItemTotal($productModel): float{
-        $this->itemTotal = $productModel->price * $this->amount;
-        return $this->itemTotal;
-    }*/
+    public function getItemTotal(): float{
+        return $this->productModel->price * $this->amount;
+    }
 
 }

@@ -115,7 +115,7 @@ class responseListObject {
         let price = $("<p>").addClass("card-text")
         price.text("€ " + product.price)
 
-        let button = $("<a>").addClass("btn btn-primary addToCart").attr("id", product.productId)
+        let button = $("<a>").addClass("btn btn-primary add").data("article-id", product.productId)
         button.attr("href", "#")
         button.text("In den Warenkorb")
 
