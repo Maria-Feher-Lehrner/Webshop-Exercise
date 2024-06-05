@@ -74,7 +74,7 @@ class responseListObject {
 
     createHeadline(productType) {
         let headline = $("<h2>")
-        headline.text(productType.toUpperCase())
+        headline.text(productType)
         this.$productOutput.prepend(headline)
     }
 
