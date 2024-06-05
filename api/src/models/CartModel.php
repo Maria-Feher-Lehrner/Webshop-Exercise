@@ -4,7 +4,7 @@ namespace Fhtechnikum\Webshop\models;
 
 class CartModel
 {
-    public array $cartProducts = [];
+    private array $cartProducts = [];
 
     public function addProduct(CartProductModel $cartProduct): void
     {

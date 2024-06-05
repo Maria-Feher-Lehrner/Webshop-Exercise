@@ -16,6 +16,11 @@ use PDO;
 
 class ProductDbController
 {
+    //TODO: Controller besser in 2 versch. Controller aufteilen, weil zwei verschiedene Zuständigkeiten gehandelt werden.
+    // Repo kann aber gemeinsam genutzt werden.
+    // Klassiker dafür ist auch ein eigenes Login - nie mit den anderen Ressourcen vermischen.
+
+
     private PDO $productDatabase;
     private ProductsRepository $productsRepository;
     private CategoriesService $categoriesService;
@@ -59,6 +64,8 @@ class ProductDbController
                 throw new InvalidArgumentException("Unsupported HTTP request method");
         }
     }
+
+    //ACHTUNG! Hier zwar laut Angabe die Verben POST und DELETE eingesetzt, aber eigentlich nicht nach Standard umgesetzt (das wäre besser ein put)
 
 
     private function handleGetRequest(): void
