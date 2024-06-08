@@ -31,7 +31,7 @@ class responseListObject {
             method: 'GET'
         })
             .done((response) => {
-                console.log(response)
+                //console.log(response)
                 let productType = response.productType
                 let products = response.products
                 this.updateProductsList(products)
@@ -99,11 +99,11 @@ class responseListObject {
     }
 
     generateCard(){
-        return $("<div>").addClass("card mb-3").attr("style", "width: 18rem;")
+        return $("<div>").addClass("card d-flex mb-3").attr("style", "width: 18rem;")
     }
     generateCardImg(id) {
         let cardImg = $("<img>").addClass("card-img-top")
-        cardImg.attr("src", "assets/" + id + ".png").attr("alt", "")
+        cardImg.attr("src", "assets/productImgs/" + id + ".png").attr("alt", "")
         return cardImg
     }
 
@@ -114,15 +114,26 @@ class responseListObject {
         title.text(product.name)
         let price = $("<p>").addClass("card-text")
         price.text("€ " + product.price)
-
-        let button = $("<a>").addClass("btn btn-primary add").data("article-id", product.productId)
-        button.attr("href", "#")
-        button.text("In den Warenkorb")
+        let button = this.generateCardButton(product)
 
         cardBody.append(title)
         cardBody.append(price)
         cardBody.append(button)
         return cardBody
+    }
+
+    generateCardButton(product){
+        //let button = $("<a>").addClass("btn btn-primary align-bottom add").data("article-id", product.productId)
+        let button = $("<a>", {
+            class: "btn btn-primary align-bottom add",
+            href: "#",
+            text: "In den Warenkorb",
+            "data-article-id": product.productId,
+            "data-bs-toggle": "modal",
+            "data-bs-target": "#modalShoppingInfo"
+        })
+
+        return button
     }
 
 

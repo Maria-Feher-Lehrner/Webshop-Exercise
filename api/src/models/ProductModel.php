@@ -7,7 +7,7 @@ class ProductModel
     public int $productId;
 
     public string $name;
-    public string $price;
+    public float $price;
     public string $categoryName;
     public int $categoryId;
 }

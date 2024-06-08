@@ -7,7 +7,7 @@ class ProductDTO
     public int $productId;
 
     public string $name;
-    public string $price;
+    public float $price;
 
     public static function map($productModel): ProductDTO
     {

@@ -17,7 +17,8 @@ class CartProductModel
     }
 
     public function getItemTotal(): float{
-        return $this->productModel->price * $this->amount;
+        $itemTotal = $this->productModel->price * $this->amount;
+        return floatval(number_format($itemTotal, 2, '.', ''));
     }
 
 }

@@ -10,11 +10,11 @@ class CartObject {
         //event delegation for dynamically created buttons
         $(document).on('click', '.add', (event) => this.addProductToCart(event))
         $(document).on('click', '.subtract', (event) => this.subtractProductFromCart(event))
+        $(document).on('click', '.draw-new', (event) => this.loadCartData(event))
     }
 
     buildWebshopView() {
         this.loadCartData()
-
     }
 
     loadCartData() {
@@ -70,7 +70,7 @@ class CartObject {
             let tdArticleName = $("<td>").text(item.articleName)
             let tdAmount = $("<td>")
             this.drawElementAmount(tdAmount, item)
-            let tdPrice = $("<td>").text("€ " + item.itemTotal)
+            let tdPrice = $("<td>").text("€ " + item.itemTotal.toFixed(2))
 
             tr.append(tdArticleName, tdAmount, tdPrice)
             tableBody.append(tr)
@@ -79,17 +79,25 @@ class CartObject {
     }
     drawElementAmount(tdElement, item){
 
-        let buttonPlus = $("<button>").addClass("btn btn-outline-dark m-1 add").attr("type", "button").data("article-id", item.articleId)
-        let buttonMinus = $("<button>").addClass("btn btn-outline-dark m-1 px-2.5 subtract").attr("type", "button").data("article-id", item.articleId)
-        buttonPlus.text("+")
-        buttonMinus.text("-")
+        let buttonPlus = $("<button>").addClass("btn btn-outline-dark m-1 add draw-new").attr("type", "button").data("article-id", item.articleId)
+        let buttonMinus = $("<button>").addClass("btn btn-outline-dark subtract draw-new").attr("type", "button").data("article-id", item.articleId)
+        let imgPlus = $("<img>", {
+            src: "assets/icons/plus.svg",
+            alt: "addOne"
+        });
+        let imgMinus = $("<img>", {
+            src: "assets/icons/dash.svg",
+            alt: "removeOne"
+        });
+        buttonPlus.append(imgPlus)
+        buttonMinus.append(imgMinus)
         tdElement.text(item.amount)
         tdElement.append(buttonPlus, buttonMinus)
     }
     appendSummaryRow(response, table){
         let trSummary = $("<tr>").addClass("summaryRow")
         let thSummary = $("<th>").text("Gesamtsumme").attr("colspan", "2")
-        let tdTotal = $("<td>").text("€ " + response.totalPrice).addClass("fw-bold")
+        let tdTotal = $("<td>").text("€ " + response.totalPrice.toFixed(2)).addClass("fw-bold")
 
         trSummary.append(thSummary, tdTotal)
         table.append(trSummary)
@@ -107,7 +115,9 @@ class CartObject {
         })
             .done((response) => {
                 this.showSuccessMessage()
-                this.loadCartData()
+                if(!$("#warenkorb").hasClass("col-0")){
+                    this.loadCartData()
+                }
             })
             .fail(function (error) {
                 console.log(error)

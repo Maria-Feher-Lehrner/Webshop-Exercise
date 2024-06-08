@@ -77,7 +77,7 @@ class ProductsRepository
                 $productModel = new ProductModel();
                 $productModel->name = $product['productName'];
                 $productModel->productId = $product['productId'];
-                $productModel->price = $product['productPrice'];
+                $productModel->price = (float) $product['productPrice'];
                 $productModel->categoryName = $product['categoryName'];
                 $productModel->categoryId = $product['categoryId'];
 
