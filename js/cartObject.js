@@ -7,6 +7,7 @@ class CartObject {
 
     initGui() {
         this.$navToCart.on('click', () => this.buildWebshopView())
+
         //event delegation for dynamically created buttons
         $(document).on('click', '.add', (event) => this.addProductToCart(event))
         $(document).on('click', '.subtract', (event) => this.subtractProductFromCart(event))

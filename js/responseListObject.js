@@ -97,7 +97,6 @@ class responseListObject {
     generateCardColumn() {
         return $("<div>").addClass("col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch mb-3")
     }
-
     generateCard(){
         return $("<div>").addClass("card d-flex mb-3").attr("style", "width: 18rem;")
     }
@@ -106,7 +105,6 @@ class responseListObject {
         cardImg.attr("src", "assets/productImgs/" + id + ".png").attr("alt", "")
         return cardImg
     }
-
     generateCardBody(product) {
         let cardBody = $("<div>").addClass("card-body d-flex flex-column")
 
@@ -121,7 +119,6 @@ class responseListObject {
         cardBody.append(button)
         return cardBody
     }
-
     generateCardButton(product){
         //let button = $("<a>").addClass("btn btn-primary align-bottom add").data("article-id", product.productId)
         let button = $("<a>", {
@@ -136,7 +133,6 @@ class responseListObject {
         return button
     }
 
-
     setupEventHandlers() {
         this.$categoriesOutput.on('click', 'a', (event) => {
             event.preventDefault();
@@ -145,6 +141,12 @@ class responseListObject {
         });
     }
 }
+
+
+
+
+
+
 
 
 //Alternative Umsetzung typeID aus URL parsen. Z. B.:
