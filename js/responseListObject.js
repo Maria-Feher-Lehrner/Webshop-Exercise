@@ -95,7 +95,7 @@ class responseListObject {
     }
 
     generateCardColumn() {
-        return $("<div>").addClass("col-sm-6 col-md-4 col-lg-3 ml-3 mr-3")
+        return $("<div>").addClass("col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch mb-3")
     }
 
     generateCard(){
@@ -108,7 +108,7 @@ class responseListObject {
     }
 
     generateCardBody(product) {
-        let cardBody = $("<div>").addClass("card-body")
+        let cardBody = $("<div>").addClass("card-body d-flex flex-column")
 
         let title = $("<p>").addClass("card-text")
         title.text(product.name)
@@ -125,7 +125,7 @@ class responseListObject {
     generateCardButton(product){
         //let button = $("<a>").addClass("btn btn-primary align-bottom add").data("article-id", product.productId)
         let button = $("<a>", {
-            class: "btn btn-primary align-bottom add",
+            class: "btn btn-primary mt-auto add",
             href: "#",
             text: "In den Warenkorb",
             "data-article-id": product.productId,
