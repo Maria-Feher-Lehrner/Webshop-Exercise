@@ -141,11 +141,4 @@ class CartObject {
                 console.log(error)
             })
     }
-
-
-    showSuccessMessage() {
-        //TODO: Info Aktion erfolgreich einfügen via Modal
-    }
-
-
 }
