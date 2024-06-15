@@ -14,7 +14,7 @@ use Fhtechnikum\Webshop\views\JSONView;
 use http\Exception\InvalidArgumentException;
 use PDO;
 
-class ProductDbController
+class ProductDbController implements ControllerInterface
 {
     //TODO: Controller besser in 2 versch. Controller aufteilen, weil zwei verschiedene Zuständigkeiten gehandelt werden.
     // Repo kann aber gemeinsam genutzt werden.
@@ -29,11 +29,9 @@ class ProductDbController
     private JSONView $jsonView;
 
 
-    public function __construct()
+    public function __construct($database)
     {
-        //initializing database connection
-        $this->productDatabase = new PDO("mysql:host=localhost;dbname=bb_uebung_3; charset=utf8", "root", "");
-
+        $this->productDatabase = $database;
         //initializing repositories and services that need to be accessible from the start
         $this->productsRepository = new ProductsRepository($this->productDatabase);
         $this->categoriesService = new CategoriesService($this->productsRepository);

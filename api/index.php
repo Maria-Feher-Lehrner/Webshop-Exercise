@@ -1,5 +1,6 @@
 <?php
 
+use Fhtechnikum\Webshop\App;
 use Fhtechnikum\Webshop\ProductDbController;
 
 require 'vendor/autoload.php';
@@ -7,8 +8,8 @@ require 'vendor/autoload.php';
 session_start();
 $_SESSION["name"] = "test";
 $_SESSION["id"] = "1";
-$app = new ProductDbController();
-$app->route();
+$app = new App();
+$app->start();
 
 
 /*
@@ -24,9 +25,4 @@ $app->route();
  *
  * Interface: wird in Musterlösung EINGESETZT, indem es in der Serviceklasse explizit als Property übergeben wird.
  * Dh. die erwartet dann einfach das Interface und dessen Funktionen. Was dahinter liegt an Repos ist für die Service-Klasse
- * dann irrelevant.
- *
- *
- * TODO: im DTO zum Preis noch das total vom cartItem hinzufügen, damit das nicht im Frontend passiert.
- * Und dann wahrscheinlich auch noch das total vom cart?
- * */
+ * dann irrelevant.*/
