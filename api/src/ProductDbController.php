@@ -32,6 +32,7 @@ class ProductDbController implements ControllerInterface
     public function __construct($database)
     {
         $this->productDatabase = $database;
+
         //initializing repositories and services that need to be accessible from the start
         $this->productsRepository = new ProductsRepository($this->productDatabase);
         $this->categoriesService = new CategoriesService($this->productsRepository);
@@ -50,13 +51,13 @@ class ProductDbController implements ControllerInterface
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                $this->handleGetRequest();
+                $this->getProductListsOrCart();
                 break;
             case 'POST':
-                $this->handlePostRequest();
+                $this->postProductsToCart();
                 break;
             case 'DELETE':
-                $this->handleDeleteRequest();
+                $this->removeProductsFromCart();
                 break;
             default:
                 throw new InvalidArgumentException("Unsupported HTTP request method");
@@ -66,13 +67,13 @@ class ProductDbController implements ControllerInterface
     //ACHTUNG! Hier zwar laut Angabe die Verben POST und DELETE eingesetzt, aber eigentlich nicht nach Standard umgesetzt (das wäre besser ein put)
 
 
-    private function handleGetRequest(): void
+    private function getProductListsOrCart(): void
     {
         $resource = $this->getRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
         switch (strtolower($resource)) {
             case "types":
-                $this->buildCategoryList();
+                $this->getCategoryList();
                 break;
             case "products":
                 //variable filter-type gets only initialized if necessary
@@ -80,10 +81,10 @@ class ProductDbController implements ControllerInterface
 
                 //initializing productItemsService only when needed
                 $this->productItemsService = new ProductItemsService($filterType, $this->productsRepository);
-                $this->buildProductsList($this->productItemsService);
+                $this->getProductsList($this->productItemsService);
                 break;
             case "cart":
-                $this->buildCartContent($this->cartService);
+                $this->getCartContent($this->cartService);
                 break;
             default:
                 throw new InvalidArgumentException("Invalid value for resource parameter");
@@ -98,7 +99,7 @@ class ProductDbController implements ControllerInterface
         return $value;
     }
 
-    private function buildCategoryList(): void
+    private function getCategoryList(): void
     {
         $categoryList = $this->categoriesService->mapAndProvideCategoryResult();
         $dtoList = [];
@@ -108,7 +109,7 @@ class ProductDbController implements ControllerInterface
         $this->jsonView->output($dtoList);
     }
 
-    private function buildProductsList($service): void
+    private function getProductsList($service): void
     {
         $productList = $service->getProductModelList();
         $dtoList = [];
@@ -132,14 +133,14 @@ class ProductDbController implements ControllerInterface
         return $productListDTO;
     }
 
-    private function buildCartContent(CartService $cartService): void
+    private function getCartContent(CartService $cartService): void
     {
         $shoppingCart = $cartService->getShoppingCart();
         $cartDTO = CartDTO::map($shoppingCart);
         $this->jsonView->output($cartDTO);
     }
 
-    private function handlePostRequest(): void
+    private function postProductsToCart(): void
     {
         try {
             $productId = $this->getArticleIdParameter();
@@ -156,7 +157,7 @@ class ProductDbController implements ControllerInterface
 
     }
 
-    private function handleDeleteRequest(): void
+    private function removeProductsFromCart(): void
     {
         try {
             $productId = $this->getArticleIdParameter();

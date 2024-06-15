@@ -2,6 +2,7 @@
 
 namespace Fhtechnikum\Webshop\repos;
 
+use Fhtechnikum\Webshop\models\UserModel;
 use PDO;
 
 class UsersRepository
@@ -13,12 +14,19 @@ class UsersRepository
         $this->database = $database;
     }
 
-    public function checkLoginData(){
+    public function getUserByEmail($email): ?UserModel
+    {
+        $query = "SELECT email as userName, password as passwordHash FROM customers
+                    WHERE email = :email";
+        $statement = $this->database->prepare($query);
+        $statement->bindParam(":email", $email);
+        $statement->execute();
+        $userModel = $statement->fetchObject(UserModel::class);
 
+        return $userModel ?: null;
     }
 
     public function getUserCartHistory(){
 
     }
-
 }

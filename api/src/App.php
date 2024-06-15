@@ -9,7 +9,8 @@ class App
     private ?string $input = null;
     private PDO $database;
 
-    public function __construct() {
+    public function __construct()
+    {
         //initializing database connection
         $this->database = new PDO("mysql:host=localhost;dbname=bb_uebung_3; charset=utf8", "root", "");
     }
@@ -42,15 +43,15 @@ class App
         }
 
     }
+
     private function identifyController($input)
     {
-        print_r($input);
-
         switch (strtolower($input)) {
             case "types":
             case "products":
             case "cart":
                 return new ProductDbController($this->database);
+            case "orders":
             case "login":
             case "logout":
                 return new UsersController($this->database);

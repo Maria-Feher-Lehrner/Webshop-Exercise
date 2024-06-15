@@ -1,13 +1,10 @@
 <?php
 
 use Fhtechnikum\Webshop\App;
-use Fhtechnikum\Webshop\ProductDbController;
 
 require 'vendor/autoload.php';
 
 session_start();
-$_SESSION["name"] = "test";
-$_SESSION["id"] = "1";
 $app = new App();
 $app->start();
 
