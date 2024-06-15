@@ -32,12 +32,15 @@ class UsersController implements ControllerInterface
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
+                //print_r("GET: ".$_SERVER['REQUEST_METHOD']);
                 $this->getOrders();
                 break;
             case 'POST':
+                //print_r("POST: ".$_SERVER['REQUEST_METHOD']);
                 $this->postCredentialsOrOrders();
                 break;
             default:
+                //print_r("default: ".$_SERVER['REQUEST_METHOD']);
                 throw new InvalidArgumentException("Unsupported HTTP request method");
         }
     }
@@ -45,7 +48,7 @@ class UsersController implements ControllerInterface
     private function getOrders()
     {
         try {
-            $resource = $this->getRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+            $resource = $this->determineRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if (strtolower($resource) !== "orders") {
                 throw new InvalidArgumentException("Invalid value for resource parameter");
             }
@@ -95,19 +98,18 @@ class UsersController implements ControllerInterface
     private
     function postCredentialsOrOrders(): void
     {
-        $input = $this->getInputValue();
+        $action = $this->determineRequestParameter('action', FILTER_SANITIZE_STRING);
+        //print_r("this is the action parameter: " . $action);
 
-        switch (strtolower($input)) {
+        switch (strtolower($action)) {
             case "login":
-                $userName = $this->getRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
-                $password = $this->getRequestParameter('password', FILTER_SANITIZE_STRING);
-                $this->handleLogin($userName, $password);
+                $this->handleLogin();
                 break;
             case "logout":
                 $this->usersService->logoutUser();
                 break;
             case "orders":
-                $token = $this->getRequestParameter('token', FILTER_SANITIZE_STRING);
+                $token = $this->determineRequestParameter('token', FILTER_SANITIZE_STRING);
                 //TODO: token wahrscheinlich von woanders holen als einfach aus Adresszeile?
                 $this->placeOrder($token);
             default:
@@ -116,9 +118,12 @@ class UsersController implements ControllerInterface
     }
 
     private
-    function handleLogin($userName, $password): void
+    function handleLogin(): void
     {
         try {
+            $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
+            $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
+
             $token = $this->usersService->loginUser($userName, $password);
             echo json_encode(['token' => $token]);
         } catch (InvalidArgumentException $e) {
@@ -133,12 +138,22 @@ class UsersController implements ControllerInterface
     }
 
     private
-    function getRequestParameter($parameter, $filter, $options = null)
+    function determineRequestParameter($parameter, $filter, $options = null)
     {
-        $value = filter_input(INPUT_GET, $parameter, $filter, $options);
+        $value = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $value = filter_input(INPUT_POST, $parameter, $filter, $options);
+        }
+
+        if ($value === null) {
+            $value = filter_input(INPUT_GET, $parameter, $filter, $options);
+        }
+
         if ($value === null || $value === false) {
             throw new InvalidArgumentException("Invalid or missing $parameter parameter");
         }
+
         return $value;
     }
 
@@ -146,10 +161,12 @@ class UsersController implements ControllerInterface
     function getInputValue()
     {
         $input = null;
+        //print_r("input is: ".$input);
         $inputs = [
-            'resource' => $this->getRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES),
-            'action' => $this->getRequestParameter('action', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            'resource' => $this->determineRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES),
+            'action' => $this->determineRequestParameter('action', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
         ];
+        //print_r($inputs);
 
         foreach ($inputs as $value) {
             if ($value !== null) {

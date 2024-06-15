@@ -25,6 +25,7 @@ class UsersService
             $token = bin2hex(random_bytes(16));
             $_SESSION['user_token'] = $token;
             $_SESSION['user_email'] = $userName;
+            //print_r($_SESSION);
             return $token;
         } else {
             throw new InvalidArgumentException('Invalid email or password');
@@ -56,5 +57,7 @@ class UsersService
 
     public function getOrdersHistory(): OrderHistoryDTO
     {
+        $orderHistory = new OrderHistoryDTO();
+        return $orderHistory;
     }
 }
