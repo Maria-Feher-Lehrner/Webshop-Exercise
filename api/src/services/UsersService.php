@@ -60,4 +60,8 @@ class UsersService
         $orderHistory = new OrderHistoryDTO();
         return $orderHistory;
     }
+
+    public function placeOrder()
+    {
+    }
 }

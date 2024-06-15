@@ -66,6 +66,50 @@ class UsersController implements ControllerInterface
             exit;
         }
     }
+
+
+    /**
+     * @throws RandomException
+     */
+    private function postCredentialsOrOrders(): void
+    {
+        $action = $this->determineRequestParameter('action', FILTER_SANITIZE_STRING);
+        //print_r("this is the action parameter: " . $action);
+
+        switch (strtolower($action)) {
+            case "login":
+                $this->handleLogin();
+                break;
+            case "logout":
+                $this->usersService->logoutUser();
+                break;
+            case "orders":
+                $this->placeOrder();
+            default:
+                throw new InvalidArgumentException("Invalid value for action parameter");
+        }
+    }
+
+    private function handleLogin(): void
+    {
+        try {
+            $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
+            $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
+
+            $token = $this->usersService->loginUser($userName, $password);
+            echo json_encode(['token' => $token]);
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    private function placeOrder(): void
+    {
+        $this->validateAuthorizationToken();
+        $this->usersService->placeOrder();
+    }
+
     private function validateAuthorizationToken(): void
     {
         $token = $this->getAuthorizationToken();
@@ -91,54 +135,13 @@ class UsersController implements ControllerInterface
 
         throw new InvalidArgumentException('Invalid or missing authorization header');
     }
-
-    /**
-     * @throws RandomException
-     */
-    private
-    function postCredentialsOrOrders(): void
+    private function getOrdersHistory(): void
     {
-        $action = $this->determineRequestParameter('action', FILTER_SANITIZE_STRING);
-        //print_r("this is the action parameter: " . $action);
-
-        switch (strtolower($action)) {
-            case "login":
-                $this->handleLogin();
-                break;
-            case "logout":
-                $this->usersService->logoutUser();
-                break;
-            case "orders":
-                $token = $this->determineRequestParameter('token', FILTER_SANITIZE_STRING);
-                //TODO: token wahrscheinlich von woanders holen als einfach aus Adresszeile?
-                $this->placeOrder($token);
-            default:
-                throw new InvalidArgumentException("Invalid value for action parameter");
-        }
+        $orderHistory = $this->usersService->getOrdersHistory();
+        $this->jsonView->output($orderHistory);
     }
 
-    private
-    function handleLogin(): void
-    {
-        try {
-            $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
-            $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
-
-            $token = $this->usersService->loginUser($userName, $password);
-            echo json_encode(['token' => $token]);
-        } catch (InvalidArgumentException $e) {
-            http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
-        }
-    }
-
-    private
-    function placeOrder(mixed $token)
-    {
-    }
-
-    private
-    function determineRequestParameter($parameter, $filter, $options = null)
+    private function determineRequestParameter($parameter, $filter, $options = null)
     {
         $value = null;
 
@@ -157,8 +160,7 @@ class UsersController implements ControllerInterface
         return $value;
     }
 
-    private
-    function getInputValue()
+    /*private function getInputValue()
     {
         $input = null;
         //print_r("input is: ".$input);
@@ -175,11 +177,6 @@ class UsersController implements ControllerInterface
             }
         }
         return $input;
-    }
+    }*/
 
-    private function getOrdersHistory(): void
-    {
-        $orderHistory = $this->usersService->getOrdersHistory();
-        $this->jsonView->output($orderHistory);
-    }
 }

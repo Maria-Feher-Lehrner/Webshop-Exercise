@@ -6,6 +6,7 @@ class UserModel
 {
     public string $userName;
     public string $passwordHash;
+    public int $userId;
 
     /*public function __construct($userName, $passwordHash)
     {
