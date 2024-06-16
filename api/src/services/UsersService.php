@@ -10,10 +10,12 @@ use Random\RandomException;
 class UsersService
 {
     private UsersRepository $usersRepository;
+    private $customerId;
 
     public function __construct(UsersRepository $usersRepository)
     {
         $this->usersRepository = $usersRepository;
+        $this->customerId = $_SESSION['user_id'] ?? null;
     }
 
     /**
@@ -34,7 +36,6 @@ class UsersService
             throw new InvalidArgumentException('Invalid email or password');
         }
     }
-
     public function validateToken($token): bool
     {
         if (isset($_SESSION['user_token']) && $_SESSION['user_token'] === $token) {
@@ -51,8 +52,12 @@ class UsersService
 
     public function getOrdersHistory(): OrderHistoryDTO
     {
-        $orderHistory = new OrderHistoryDTO();
-        return $orderHistory;
+        $orderHistory = $this->usersRepository->getUserCartHistory($this->customerId);
+        $orderHistoryDTO = new OrderHistoryDTO();
+        foreach ($orderHistory as $order) {
+            $orderHistoryDTO->orders[] = $order;
+        }
+        return $orderHistoryDTO;
     }
 
     public function placeOrder(): void
@@ -70,9 +75,9 @@ class UsersService
         $totalPrice = array_reduce($cart->getProducts(), function($sum, $cartProduct) {
             return $sum + $cartProduct->getItemTotal();
         }, 0.0);
-        $customerId = $_SESSION['user_id'] ?? null;
+        //$customerId = $_SESSION['user_id'] ?? null;
 
-        $orderId = $this->usersRepository->createEntryOrderAndReturnOrderId($customerId, $totalPrice);
+        $orderId = $this->usersRepository->createEntryOrderAndReturnOrderId($this->customerId, $totalPrice);
 
         foreach ($cart->getProducts() as $cartProduct) {
             $this->usersRepository->createEntryOrderPosition(

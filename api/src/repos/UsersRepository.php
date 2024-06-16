@@ -68,10 +68,10 @@ class UsersRepository
     }
 
     public function getUserCartHistory(int $customerId): array {
-        $query = "SELECT all FROM orders
+        $query = "SELECT * FROM orders
                     WHERE customer_id = :id";
         $statement = $this->database->prepare($query);
-        $statement->bindParam(':id', $customerId);
+        $statement->bindParam(':id', $customerId, PDO::PARAM_INT);
         $statement->execute();
         $orderList = $statement->fetchAll(PDO::FETCH_ASSOC);
         $result = $this->getMappedOrders($orderList);
@@ -80,7 +80,7 @@ class UsersRepository
 
     public function getMappedOrders($orderList): array
     {
-        $orderList = [];
+        $mappedOrders = [];
         foreach ($orderList as $order) {
             $orderModel = new OrderModel();
             $orderModel->id = $order["id"];
@@ -88,7 +88,7 @@ class UsersRepository
             $orderModel->date = $order["date"];
             $orderModel->total = $order["total"];
 
-            $orderList[] = $orderModel;
+            $mappedOrders[] = $orderModel;
         }
         return $orderList;
     }

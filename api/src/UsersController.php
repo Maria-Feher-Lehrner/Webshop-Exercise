@@ -63,6 +63,26 @@ class UsersController implements ControllerInterface
             exit;
         }
     }
+    private function getOrdersHistory(): void
+    {
+        $orderHistory = $this->usersService->getOrdersHistory();
+
+        $this->jsonView->output($orderHistory);
+    }
+
+    private function determineRequestParameter($parameter, $filter, $options = null)
+    {
+        $value = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $value = filter_input(INPUT_POST, $parameter, $filter, $options);
+        }
+
+        if ($value === null) {
+            $value = filter_input(INPUT_GET, $parameter, $filter, $options);
+        }
+        return $value;
+    }
 
     /**
      * @throws RandomException
@@ -138,25 +158,7 @@ class UsersController implements ControllerInterface
 
         throw new InvalidArgumentException('Invalid or missing authorization header');
     }
-    private function getOrdersHistory(): void
-    {
-        $orderHistory = $this->usersService->getOrdersHistory();
-        $this->jsonView->output($orderHistory);
-    }
 
-    private function determineRequestParameter($parameter, $filter, $options = null)
-    {
-        $value = null;
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $value = filter_input(INPUT_POST, $parameter, $filter, $options);
-        }
-
-        if ($value === null) {
-            $value = filter_input(INPUT_GET, $parameter, $filter, $options);
-        }
-        return $value;
-    }
 
     private function getInputValue()
     {
