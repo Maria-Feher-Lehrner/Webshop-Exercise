@@ -32,15 +32,12 @@ class UsersController implements ControllerInterface
     {
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
-                //print_r("GET: ".$_SERVER['REQUEST_METHOD']);
                 $this->getOrders();
                 break;
             case 'POST':
-                //print_r("POST: ".$_SERVER['REQUEST_METHOD']);
                 $this->postCredentialsOrOrders();
                 break;
             default:
-                //print_r("default: ".$_SERVER['REQUEST_METHOD']);
                 throw new InvalidArgumentException("Unsupported HTTP request method");
         }
     }
@@ -73,20 +70,25 @@ class UsersController implements ControllerInterface
      */
     private function postCredentialsOrOrders(): void
     {
-        $action = $this->determineRequestParameter('action', FILTER_SANITIZE_STRING);
-        //print_r("this is the action parameter: " . $action);
+        try {
+            $input = $this->getInputValue();
 
-        switch (strtolower($action)) {
-            case "login":
-                $this->handleLogin();
-                break;
-            case "logout":
-                $this->usersService->logoutUser();
-                break;
-            case "orders":
-                $this->placeOrder();
-            default:
-                throw new InvalidArgumentException("Invalid value for action parameter");
+            switch (strtolower($input)) {
+                case "login":
+                    $this->handleLogin();
+                    break;
+                case "logout":
+                    $this->usersService->logoutUser();
+                    break;
+                case "orders":
+                    $this->placeOrder();
+                    break;
+                default:
+                    throw new InvalidArgumentException("Invalid value for input parameter");
+            }
+        } catch (InvalidArgumentException $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 
@@ -127,10 +129,12 @@ class UsersController implements ControllerInterface
     }
     private function getAuthorizationToken(): string
     {
-        $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        $headers = getallheaders();
+        $authorizationHeader = $headers['Authorization'] ?? '';
 
         if (preg_match('/Bearer\s+(.*)$/i', $authorizationHeader, $matches)) {
-            return $matches[1];
+            $token = $matches[1];
+            return $token;
         }
 
         throw new InvalidArgumentException('Invalid or missing authorization header');
@@ -152,23 +156,16 @@ class UsersController implements ControllerInterface
         if ($value === null) {
             $value = filter_input(INPUT_GET, $parameter, $filter, $options);
         }
-
-        if ($value === null || $value === false) {
-            throw new InvalidArgumentException("Invalid or missing $parameter parameter");
-        }
-
         return $value;
     }
 
-    /*private function getInputValue()
+    private function getInputValue()
     {
         $input = null;
-        //print_r("input is: ".$input);
         $inputs = [
             'resource' => $this->determineRequestParameter('resource', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES),
             'action' => $this->determineRequestParameter('action', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
         ];
-        //print_r($inputs);
 
         foreach ($inputs as $value) {
             if ($value !== null) {
@@ -176,7 +173,10 @@ class UsersController implements ControllerInterface
                 break;
             }
         }
-        return $input;
-    }*/
 
+        if ($input === null) {
+            throw new InvalidArgumentException("Invalid or missing action/resource parameter");
+        }
+        return $input;
+    }
 }

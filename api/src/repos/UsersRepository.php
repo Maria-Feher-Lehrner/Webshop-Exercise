@@ -26,12 +26,18 @@ class UsersRepository
         return $userModel ?: null;
     }
 
-    public function createEntryOrder(int $customerId, float $totalPrice): int
+    public function createEntryOrderAndReturnOrderId(?int $customerId, float $totalPrice): int
     {
-        $query = "INSERT INTO orders (customer_id, total, order_date)
+        $query = "INSERT INTO orders (customer_id, total, date)
                     VALUES (:customer_id, :total, NOW())";
         $statement = $this->database->prepare($query);
-        $statement->bindParam(':customer_id', $customerId);
+
+        if ($customerId === null) {
+            $statement->bindValue(':customer_id', null, PDO::PARAM_NULL);
+        } else {
+            $statement->bindParam(':customer_id', $customerId);
+        }
+
         $statement->bindParam(':total', $totalPrice);
         $statement->execute();
 
@@ -39,12 +45,14 @@ class UsersRepository
             throw new Exception("Failed to create order");
         }*/
 
+        //TODO: Nachdenken, wie man diese zwei Zuständigkeiten trennen könnte (return OrderId), ohne dass Möglichkeit besteht,
+        // dass inzwischen potenziell eine andere Order bearbeitet und in die DB geslottet wird?
         return (int)$this->database->lastInsertId();
     }
 
     public function createEntryOrderPosition(int $orderId, int $articleId, int $amount, float $itemTotal): void
     {
-        $query = "INSERT INTO order_positions (order_id, article_id, amount, item_total) 
+        $query = "INSERT INTO order_positions (order_id, product_id, amount, item_total) 
                     VALUES (:order_id, :article_id, :amount, :item_total)";
         $statement = $this->database->prepare($query);
         $statement->bindParam(':order_id', $orderId);
