@@ -2,6 +2,7 @@
 
 namespace Fhtechnikum\Webshop\repos;
 
+use Fhtechnikum\Webshop\models\OrderModel;
 use Fhtechnikum\Webshop\models\UserModel;
 use PDO;
 
@@ -66,7 +67,29 @@ class UsersRepository
         }*/
     }
 
-    public function getUserCartHistory(){
+    public function getUserCartHistory(int $customerId): array {
+        $query = "SELECT all FROM orders
+                    WHERE customer_id = :id";
+        $statement = $this->database->prepare($query);
+        $statement->bindParam(':id', $customerId);
+        $statement->execute();
+        $orderList = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->getMappedOrders($orderList);
+        return $result;
+    }
 
+    public function getMappedOrders($orderList): array
+    {
+        $orderList = [];
+        foreach ($orderList as $order) {
+            $orderModel = new OrderModel();
+            $orderModel->id = $order["id"];
+            $orderModel->customerId = $order["customer_id"];
+            $orderModel->date = $order["date"];
+            $orderModel->total = $order["total"];
+
+            $orderList[] = $orderModel;
+        }
+        return $orderList;
     }
 }
