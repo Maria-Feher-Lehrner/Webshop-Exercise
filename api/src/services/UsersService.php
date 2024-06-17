@@ -83,7 +83,7 @@ class UsersService
         }, 0.0);
         //$customerId = $_SESSION['user_id'] ?? null;
 
-        $orderId = $this->usersRepository->createEntryOrderAndReturnOrderId($this->customerId, $totalPrice);
+        $orderId = $this->usersRepository->createOrderEntryAndReturnOrderId($this->customerId, $totalPrice);
 
         foreach ($cart->getProducts() as $cartProduct) {
             $this->usersRepository->createEntryOrderPosition(

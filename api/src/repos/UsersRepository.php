@@ -27,7 +27,7 @@ class UsersRepository
         return $userModel ?: null;
     }
 
-    public function createEntryOrderAndReturnOrderId(?int $customerId, float $totalPrice): int
+    public function createOrderEntryAndReturnOrderId(?int $customerId, float $totalPrice): int
     {
         $query = "INSERT INTO orders (customer_id, total, date)
                     VALUES (:customer_id, :total, NOW())";
