@@ -74,7 +74,7 @@ class UsersService
     {
         $cart = $_SESSION['shopping_cart'] ?? null;
 
-        if(!isset($cart) || !isset($cart->cart)) {
+        if(!isset($cart) || count($cart->cartProducts) === 0) {
             throw new InvalidArgumentException('Cart is empty');
         }
 

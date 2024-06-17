@@ -41,7 +41,6 @@ class App
             http_response_code(404);
             die('Invalid request');
         }
-
     }
 
     private function identifyController($input)
@@ -49,8 +48,9 @@ class App
         switch (strtolower($input)) {
             case "types":
             case "products":
-            case "cart":
                 return new ProductDbController($this->database);
+            case "cart":
+                return new CartController($this->database);
             case "orders":
             case "login":
             case "logout":
