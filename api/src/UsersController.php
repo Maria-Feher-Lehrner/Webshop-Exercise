@@ -35,7 +35,7 @@ class UsersController implements ControllerInterface
                 $this->getOrders();
                 break;
             case 'POST':
-                $this->postCredentialsOrOrders();
+                $this->processUserSessionsAndOrders();
                 break;
             default:
                 throw new InvalidArgumentException("Unsupported HTTP request method");
@@ -87,7 +87,7 @@ class UsersController implements ControllerInterface
     /**
      * @throws RandomException
      */
-    private function postCredentialsOrOrders(): void
+    private function processUserSessionsAndOrders(): void
     {
         try {
             $input = $this->getInputValue();
@@ -97,7 +97,7 @@ class UsersController implements ControllerInterface
                     $this->handleLogin();
                     break;
                 case "logout":
-                    $this->usersService->logoutUser();
+                    $this->handleLogout();
                     break;
                 case "orders":
                     $this->placeOrder();
@@ -117,11 +117,22 @@ class UsersController implements ControllerInterface
             $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
             $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
 
-            $token = $this->usersService->loginUser($userName, $password);
-            echo json_encode(['token' => $token]);
+            $loginResult = $this->usersService->loginUser($userName, $password);
+            echo json_encode($loginResult);
         } catch (InvalidArgumentException $e) {
             http_response_code(400);
             echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    private function handleLogout(): void
+    {
+        try {
+            $logoutResult = $this->usersService->logoutUser();
+            echo json_encode($logoutResult);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Internal server error']);
         }
     }
 

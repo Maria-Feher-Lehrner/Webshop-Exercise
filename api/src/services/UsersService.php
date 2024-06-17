@@ -21,7 +21,7 @@ class UsersService
     /**
      * @throws RandomException
      */
-    public function loginUser($userName, $passWord): string
+    public function loginUser($userName, $passWord): array
     {
         $userModel = $this->usersRepository->getUserByEmail($userName);
 
@@ -31,9 +31,25 @@ class UsersService
             $_SESSION['user_email'] = $userName;
             $_SESSION['user_id'] = $userModel->userId;
 
-            return $token;
+            $state = "OK";
+            //return $token;
+
         } else {
-            throw new InvalidArgumentException('Invalid email or password');
+            //throw new InvalidArgumentException('Invalid email or password');
+            $state = "ERROR";
+            $token = null;
+        }
+        return ['state' => $state, 'token' => $token];
+    }
+    public function logoutUser(): array
+    {
+        session_unset();
+        session_destroy();
+
+        if (empty($_SESSION)) {
+            return ['state' => 'OK'];
+        } else {
+            return ['state' => 'ERROR'];
         }
     }
     public function validateToken($token): bool
@@ -42,12 +58,6 @@ class UsersService
             return true;
         }
         return false;
-    }
-
-    public function logoutUser(): void
-    {
-        session_unset();
-        session_destroy();
     }
 
     public function getOrdersHistory(): OrderHistoryDTO
