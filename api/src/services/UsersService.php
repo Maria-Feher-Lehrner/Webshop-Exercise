@@ -74,13 +74,9 @@ class UsersService
     {
         $cart = $_SESSION['shopping_cart'] ?? null;
 
-        //TODO: ändern auf check, ob PRODUKTLISTE empty ist. Cart selbst kann kaum unset sein,
-        // weil es automatisch zu Beginn des Controllers instanziert wird. Evtl. falls customer Bestellung aufgibt und
-        // dann während Session noch läuft weitere Bestellung aufgeben möchte?
-        /*if(!$cart){
+        if(!isset($cart) || !isset($cart->cart)) {
             throw new InvalidArgumentException('Cart is empty');
-        }*/
-
+        }
 
         $totalPrice = array_reduce($cart->getProducts(), function($sum, $cartProduct) {
             return $sum + $cartProduct->getItemTotal();
