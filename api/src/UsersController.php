@@ -66,6 +66,7 @@ class UsersController implements ControllerInterface
     private function getOrdersHistory(): void
     {
         $orderHistory = $this->usersService->getOrdersHistory();
+        //ACHTUNG!! An der Stelle in Musterlösung: die() falls user unauthorized.
 
         $this->jsonView->output($orderHistory);
     }
@@ -116,6 +117,8 @@ class UsersController implements ControllerInterface
         try {
             $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
             $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
+            //ACHTUNG!! Hier aufpassen beim Entgegennehmen des Passworts: nicht filtern (?), weil man ja will,
+            // dass der User alle Sonderzeichen für sein PW verwenden kann. Aber hier wird das PW sowieso über ein prepared Statement überprüft.
 
             $loginResult = $this->usersService->loginUser($userName, $password);
             echo json_encode($loginResult);
@@ -163,6 +166,7 @@ class UsersController implements ControllerInterface
         $authorizationHeader = $headers['Authorization'] ?? '';
 
         if (preg_match('/Bearer\s+(.*)$/i', $authorizationHeader, $matches)) {
+            //ACHTUNG!! Hier in Musterlösung genauer anschauen: Bearer wird bei Übernahme aus Spezifikation entfernt?
             $token = $matches[1];
             return $token;
         }
@@ -192,3 +196,15 @@ class UsersController implements ControllerInterface
         return $input;
     }
 }
+
+//TODO: Implementierung mit Java Web Token probieren --> jwt.io (kann man auch verschlüsseln)
+//Empfehlung Passwortverschlüsselung: über das SQL Statement
+//Andere Aufteilung Controller: AuthenticationController vor allem vorlagern. Dann ProductlistController, OrderController, Cartcontroller
+
+//Ad Musterlösung (AuthenticationController): Ein Trait in PHP ist wie eine mix-in Klasse in Java
+//In Mix-in Klassen sammelt man Funktionen - ist ein workaround, ohne Vererbung zu verwenden. Wird bei der Anwendung mit AuthenticationController eingesetzt,
+//um eine zusätzliche Schicht einzuziehen.
+//Trait = Sammlung von verschiedenen - allgemein praktischen Funktionen, die potenziell von mehreren Klassen aufgerufen werden können - ohne aber, dass diese Klassen logisch von der Trait Klasse erben.
+
+
+//Bei Übername von token von Frontend: Spezifikation "Bearer" aus dem Header entfernen, damit nur noch token überbleibt

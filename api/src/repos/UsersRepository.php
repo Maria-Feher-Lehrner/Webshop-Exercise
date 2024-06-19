@@ -23,6 +23,8 @@ class UsersRepository
         $statement->bindParam(":email", $email);
         $statement->execute();
         $userModel = $statement->fetchObject(UserModel::class);
+        //Notiz aus Nachbesprechung: public properties in Classes sind in diesem Model OK
+        //Hint: fetchObject funktioniert mit gewissen Einstellungen auch für ganze Listen --> siehe Musterlösung genauer ansehen.
 
         return $userModel ?: null;
     }
@@ -61,6 +63,7 @@ class UsersRepository
         $statement->bindParam(':amount', $amount);
         $statement->bindParam(':item_total', $itemTotal);
         $statement->execute();
+        //ACHTUNG!! Notiz aus Nachbesprechung: Hier Variante aus Musterlösung ansehen - Bsp. Für Schleife von bindParam.
 
         /*if (!$stmt->execute()) {
             throw new Exception("Failed to create order");
@@ -76,6 +79,7 @@ class UsersRepository
         $orderList = $statement->fetchAll(PDO::FETCH_ASSOC);
         $result = $this->getMappedOrders($orderList);
         return $result;
+        //ACHTUNG!! Hier Beispiel aus Musterlösung ansehen! Mit & in Schleife kann man die Schleife nicht nur lesend, sondern auch schreibend ausführen.
     }
 
     public function getMappedOrders($orderList): array
@@ -90,6 +94,6 @@ class UsersRepository
 
             $mappedOrders[] = $orderModel;
         }
-        return $orderList;
+        return $mappedOrders;
     }
 }
