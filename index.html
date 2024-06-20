@@ -33,7 +33,7 @@
                     </ul>
                 </li>
                 <li class="nav-item" id="order-list">
-                    <a class="nav-link" href="orders.html">Meine Bestellungen</a>
+                    <a class="nav-link disabled" href="orders.html" id="order-history">Meine Bestellungen</a>
                 </li>
             </ul>
         </div>
@@ -57,7 +57,7 @@
                         <label for="password" class="form-label">Passwort</label>
                         <input type="password" class="form-control" id="password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-primary" id="submit-login">Login</button>
                 </form>
             </div>
         </div>
@@ -98,6 +98,20 @@
     </div>
 </div>
 
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Vielen Dank für Ihre Bestellung!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-message">
+                Weitere Details zu Ihrem Einkauf finden Sie im Warenkorb.
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"
         integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 
@@ -111,6 +125,7 @@
         crossorigin="anonymous"></script>
 <script src="js/ProductListObject.js"></script>
 <script src="js/cartObject.js"></script>
+<script src="js/UserObject.js"></script>
 <script src="js/main.js"></script>
 
 </body>

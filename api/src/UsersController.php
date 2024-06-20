@@ -115,13 +115,13 @@ class UsersController implements ControllerInterface
     private function handleLogin(): void
     {
         try {
-            $userName = $this->determineRequestParameter('user-name', FILTER_SANITIZE_EMAIL);
+            $userName = $this->determineRequestParameter('username', FILTER_SANITIZE_EMAIL);
             $password = $this->determineRequestParameter('password', FILTER_SANITIZE_STRING);
             //ACHTUNG!! Hier aufpassen beim Entgegennehmen des Passworts: nicht filtern (?), weil man ja will,
             // dass der User alle Sonderzeichen für sein PW verwenden kann. Aber hier wird das PW sowieso über ein prepared Statement überprüft.
 
             $loginResult = $this->usersService->loginUser($userName, $password);
-            echo json_encode($loginResult);
+            $this->jsonView->output($loginResult);
         } catch (InvalidArgumentException $e) {
             http_response_code(400);
             echo json_encode(['error' => $e->getMessage()]);
@@ -132,7 +132,7 @@ class UsersController implements ControllerInterface
     {
         try {
             $logoutResult = $this->usersService->logoutUser();
-            echo json_encode($logoutResult);
+            $this->jsonView->output($logoutResult);
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Internal server error']);
