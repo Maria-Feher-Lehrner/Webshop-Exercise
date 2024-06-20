@@ -38,6 +38,7 @@ class CartObject {
         this.$cart.empty()
         this.addHeadline()
         this.drawAndFillTable(response)
+        this.addOrderButton()
     }
     addHeadline() {
         let headline = $("<h1>").text("Warenkorb")
@@ -103,6 +104,10 @@ class CartObject {
         trSummary.append(thSummary, tdTotal)
         table.append(trSummary)
     }
+    addOrderButton() {
+        let oderButton = $("<button>").addClass("btn btn-primary").attr("id", "order-button").text("Bestellen")
+        this.$cart.append(oderButton)
+    }
 
 
 
@@ -142,4 +147,6 @@ class CartObject {
                 console.log(error)
             })
     }
+
+
 }

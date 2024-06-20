@@ -1,4 +1,4 @@
-class responseListObject {
+class productListObject {
     constructor() {
         this.$categoriesOutput = $('#categories-output')
         this.$productOutput = $('#products-output')

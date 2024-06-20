@@ -18,9 +18,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
+                <li class="nav-item">
                     <button class="btn btn-warning" type="submit" id="cart-nav">
                         <img src="assets/icons/cart3.svg" alt="Warenkorb" style="width: 30px; height: 20px;">
                     </button>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Anmelden
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#" id="login">Login</a></li>
+                        <li><a class="dropdown-item disabled" href="#" id="logout">Logout</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item" id="order-list">
+                    <a class="nav-link disabled" href="#">Meine Bestellungen</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -71,7 +85,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
-<script src="js/responseListObject.js"></script>
+<script src="js/ProductListObject.js"></script>
 <script src="js/cartObject.js"></script>
 <script src="js/main.js"></script>
 
@@ -82,10 +96,11 @@
  im HTML kebab-case für ids verwenden, im JS camelCase.
  Best Practice: auch nicht so simple/gängige Abkürzungen wie img verwenden.
  Best Practice: Ein Objekt wird in 1-2 Nomen beschrieben, eine Variable auch.
-                Eine Aktion ist immer ein Verb (get..., read..., is..., sort..., bei Bedingungen evtl. is...And...)
+                Eine Aktion ist immer ein Verb (get..., read..., is..., sort..., bei Bedingungen evtl. is...And...
+                )
  TODO: elegantere Anzeige vom Warenkorb bzw. Produktarea im js mit .show()
 
- Hint: man kann HTML Elemente klinen mit .clone d.h. im HTML ein Basis-Element vorbereiten, dann im js drauf zugreifen und klonen.
+ Hint: man kann HTML Elemente klonen mit .clone d.h. im HTML ein Basis-Element vorbereiten, dann im js drauf zugreifen und klonen.
  TODO: url api/index.php global wo abspeichern, und dann mehrfach drauf zugreifen.
  TODO: bessere Lösung für add-Buttons: dort wo der button gebaut wird den click-listener direkt dort auf das Element setzen, das gerade gebaut wird.
  -->
