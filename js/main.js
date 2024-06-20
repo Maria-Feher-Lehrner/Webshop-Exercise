@@ -6,6 +6,6 @@ $( document ).ready(function(){
     let cartObject = new CartObject()
     cartObject.initGui()
 
-    /*let userObject = new UserObject()
-    userObject.initGui()*/
+    let userObject = new UserObject()
+    userObject.initGui()
 });

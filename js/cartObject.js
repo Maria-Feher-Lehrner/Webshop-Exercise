@@ -147,6 +147,4 @@ class CartObject {
                 console.log(error)
             })
     }
-
-
 }
