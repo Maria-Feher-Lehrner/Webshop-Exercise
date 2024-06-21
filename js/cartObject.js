@@ -25,7 +25,7 @@ class CartObject {
         })
             .done((response) => {
                 this.drawAndFillCartSpace(response)
-                console.log(response)
+                //console.log(response)
             })
             .fail(function (error) {
                 console.log(error)
@@ -106,8 +106,6 @@ class CartObject {
     }
     addOrderButton() {
         let oderButton = $("<button>").addClass("btn btn-primary").attr("id", "order-button").text("Bestellen")
-        /*orderButton.attr("data-bs-toggle", "modal");
-        orderButton.attr("data-bs-target", "#orderModal");*/
         this.$cart.append(oderButton)
     }
 
@@ -122,7 +120,6 @@ class CartObject {
             method: 'POST'
         })
             .done((response) => {
-                this.showSuccessMessage()
                 if(!$("#warenkorb").hasClass("col-0")){
                     this.loadCartData()
                 }
@@ -142,7 +139,6 @@ class CartObject {
             method: 'DELETE'
         })
             .done((response) => {
-                this.showSuccessMessage()
                 this.loadCartData()
             })
             .fail(function (error) {

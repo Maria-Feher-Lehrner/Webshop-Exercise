@@ -5,9 +5,6 @@ class UserObject {
         this.$logoutButton = $('#logout')
         this.$loginUserName = $('#username')
         this.$loginPassword = $('#password')
-
-        this.$orderButton = $('#order-button')
-        //this.$orderSuccessInfo = $('#orderModal')
         this.$orderHistoryNavigation = $('#order-history')
 
         this.token = ""
@@ -19,8 +16,8 @@ class UserObject {
 
         this.$sendLoginButton.on('click', (event) => this.handleLogin(event));
         this.$logoutButton.on('click', () => this.sendLogoutRequest());
-
-        this.$orderButton.on('click', () => this.sendOrderRequest())
+        this.$orderHistoryNavigation.on('click', () => this.sendOrderHistoryRequest())
+        $(document).on('click', '#order-button', () => this.sendOrderRequest());
     }
 
     checkLoginState() {
@@ -43,8 +40,6 @@ class UserObject {
         event.preventDefault();
         let username = this.$loginUserName.val();
         let password = this.$loginPassword.val();
-        //console.log(`Username: ${username}`);
-        //console.log(`Password: ${password}`);
 
         this.sendLoginRequest(username, password)
     }
@@ -65,20 +60,14 @@ class UserObject {
             })
     }
     triggerLoginGuiChanges(response) {
-        //console.log(response)
         this.token = response.token
-        //console.log(this.token)
         if (this.token != null){
             $('#loginModal').modal('hide');
-            /*this.$logoutButton.removeClass('disabled')
-            this.$orderHistoryNavigation.removeClass('disabled')
-            this.$loginButton.addClass('disabled')*/
 
             localStorage.setItem('token', this.token);
             localStorage.setItem('loginState', 'loggedIn');
             this.checkLoginState()
         }
-
     }
 
     sendLogoutRequest() {
@@ -94,12 +83,7 @@ class UserObject {
             })
     }
     triggerLogoutGuiChanges(response) {
-        //console.log(response)
         if (response.state === 'OK'){
-            /*this.$logoutButton.addClass('disabled')
-            this.$orderHistoryNavigation.addClass('disabled')
-            this.$loginButton.removeClass('disabled')*/
-
             localStorage.removeItem('token');
             localStorage.setItem('loginState', 'loggedOut');
             this.checkLoginState()
@@ -109,7 +93,10 @@ class UserObject {
     sendOrderRequest(){
         $.ajax({
             url: "api/index.php?resource=orders",
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.token
+            }
         })
             .done((response) => {
                 this.displayOrderFeedback(response)
@@ -119,8 +106,12 @@ class UserObject {
             })
     }
 
-    displayOrderFeedback(response) {
+    displayOrderFeedback() {
         let $orderSuccessModal = $('#orderModal')
         $orderSuccessModal.modal('show');
+    }
+
+    sendOrderHistoryRequest(){
+
     }
 }
