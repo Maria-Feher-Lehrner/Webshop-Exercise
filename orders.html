@@ -67,17 +67,28 @@
 <div class="container mt-5">
     <h1>Meine Bestellungen</h1>
     <div class="accordion" id="order-history-container">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><span>Bestelldatum:</span></button>
+        <div class="accordion-item" id="accordion-item-1">
+            <h2 class="accordion-header" id="heading-1">
+                <button class="accordion-button" type="button" data-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1"><span>Bestelldatum:</span></button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#order-history-container">
+            <div id="collapse-1" class="accordion-collapse collapse show" aria-labelledby="heading-1" data-bs-parent="#order-history-container">
                 <div class="accordion-body">
                     Gesamtpreis:
                 </div>
             </div>
         </div>
-        <!-- More accordion items -->
+        <!-- More dynamically created accordion items -->
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Login ungültig</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -16,8 +16,8 @@ class productListObject {
             method: 'GET'
         })
             .done((response) => {
-                console.log(response[0]["productType"])
-                console.log(response[0]["url"])
+                //console.log(response[0]["productType"])
+                //console.log(response[0]["url"])
                 this.updateCategoriesList(response)
             })
             .fail(function (error) {
