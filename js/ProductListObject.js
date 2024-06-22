@@ -127,7 +127,7 @@ class productListObject {
             text: "In den Warenkorb",
             "data-article-id": product.productId,
             "data-bs-toggle": "modal",
-            "data-bs-target": "#modalShoppingInfo"
+            "data-bs-target": "#modal-Shopping-Info"
         })
 
         return button

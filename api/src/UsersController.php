@@ -145,7 +145,7 @@ class UsersController implements ControllerInterface
         $this->usersService->placeOrder();
     }
 
-    private function validateAuthorizationToken(): void
+   /* private function validateAuthorizationToken(): void
     {
         $token = $this->getAuthorizationToken();
         try {
@@ -172,7 +172,39 @@ class UsersController implements ControllerInterface
         }
 
         throw new InvalidArgumentException('Invalid or missing authorization header');
+    }*/
+
+    private function validateAuthorizationToken(): void
+    {
+        $token = $this->getAuthorizationToken();
+        try {
+            if (!$this->usersService->validateToken($token)) {
+                $this->sendErrorResponse(401, 'Unauthorized');
+            }
+        } catch (InvalidArgumentException $e) {
+            $this->sendErrorResponse(400, $e->getMessage());
+        }
     }
+
+    private function sendErrorResponse($code, $message) {
+        http_response_code($code);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => $message]);
+        exit; // Exit on error response
+    }
+
+    private function getAuthorizationToken(): string
+    {
+        $headers = getallheaders();
+        $authorizationHeader = $headers['Authorization'] ?? '';
+
+        if (preg_match('/Bearer\s+(.*)$/i', $authorizationHeader, $matches)) {
+            return $matches[1];
+        }
+
+        throw new InvalidArgumentException('Invalid or missing authorization header');
+    }
+
 
 
     private function getInputValue()

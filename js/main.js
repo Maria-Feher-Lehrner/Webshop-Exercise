@@ -7,5 +7,4 @@ $( document ).ready(function(){
     cartObject.initGui()
 
     let userObject = new UserObject()
-    userObject.initGui()
 });

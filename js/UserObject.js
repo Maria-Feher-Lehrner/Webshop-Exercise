@@ -5,9 +5,12 @@ class UserObject {
         this.$logoutButton = $('#logout')
         this.$loginUserName = $('#username')
         this.$loginPassword = $('#password')
+        this.$loginError = $('#login-error')
         this.$orderHistoryNavigation = $('#order-history')
 
         this.token = ""
+        this.checkLoginState();
+        this.initGui()
 
     }
 
@@ -16,9 +19,7 @@ class UserObject {
 
         this.$sendLoginButton.on('click', (event) => this.startLoginProcess(event))
         this.$logoutButton.on('click', () => this.sendLogoutRequest())
-        $(document).on('click', '#order-history', (event) => {
-            this.sendOrderHistoryRequest()
-        })
+        $(document).on('click', '#order-history', (event) => this.handleOrderHistoryNavigation(event))
         $(document).on('click', '#order-button', () => this.sendOrderRequest())
     }
 
@@ -28,6 +29,7 @@ class UserObject {
 
         if (loginState === 'loggedIn' && token) {
             this.token = token
+            console.log("Token retrieved from localStorage:", this.token)
             this.$logoutButton.removeClass('disabled')
             this.$orderHistoryNavigation.removeClass('disabled')
             this.$loginButton.addClass('disabled')
@@ -35,6 +37,14 @@ class UserObject {
             this.$logoutButton.addClass('disabled')
             this.$orderHistoryNavigation.addClass('disabled')
             this.$loginButton.removeClass('disabled')
+        }
+
+        this.checkCurrentPage()
+    }
+    checkCurrentPage() {
+        if (window.location.pathname.includes('orders.html')) {
+            //this.loadOrderHistory()
+            this.sendOrderHistoryRequest()
         }
     }
 
@@ -45,6 +55,7 @@ class UserObject {
 
         this.sendLoginRequest(username, password)
     }
+
     sendLoginRequest(username, password) {
         $.ajax({
             url: "api/index.php?action=login",
@@ -61,14 +72,18 @@ class UserObject {
                 console.log(error)
             })
     }
+
     triggerLoginChanges(response) {
         this.token = response.token
-        if (this.token != null){
+        if (this.token != null) {
             $('#loginModal').modal('hide')
 
             localStorage.setItem('token', this.token)
             localStorage.setItem('loginState', 'loggedIn')
             this.checkLoginState()
+        }
+        else {
+            this.$loginError.text('Login gescheitert: Username oder Passwort falsch!')
         }
     }
 
@@ -84,15 +99,16 @@ class UserObject {
                 console.log(error)
             })
     }
+
     triggerLogoutGuiChanges(response) {
-        if (response.state === 'OK'){
+        if (response.state === 'OK') {
             localStorage.removeItem('token')
             localStorage.setItem('loginState', 'loggedOut')
             this.checkLoginState()
         }
     }
 
-    sendOrderRequest(){
+    sendOrderRequest() {
         $.ajax({
             url: "api/index.php?resource=orders",
             method: 'POST',
@@ -105,16 +121,23 @@ class UserObject {
             })
             .fail(function (error) {
                 console.log(error)
+                //TODO:implement feedmack message for invalid order request (e.g. if user is not logged in)
             })
     }
 
     displayOrderFeedback() {
-        let $orderSuccessModal = $('#orderModal')
+        let $orderSuccessModal = $('#order-Modal')
         $orderSuccessModal.modal('show')
     }
 
-    sendOrderHistoryRequest(){
-        //event.preventDefault();
+    handleOrderHistoryNavigation(event) {
+        event.preventDefault()
+        console.log("Meine Bestellungen was clicked")
+        window.location.href = 'orders.html'
+    }
+
+    sendOrderHistoryRequest() {
+        console.log("Sending order history request with token:", this.token)
         $.ajax({
             url: "api/index.php?resource=orders",
             method: 'GET',
@@ -126,13 +149,15 @@ class UserObject {
                 console.log(response)
                 this.renderOrderHistory(response)
             })
-            .fail(function (error) {
+            .fail((error) => {
                 console.log(error)
+                this.showErrorModal()
             })
     }
-
     renderOrderHistory(response) {
-        if(response.error){
+        $('#order-history-container').empty();
+
+        if (response.error) {
             this.showErrorModal()
         }
         this.addOrderHistoryItems(response.orders)
@@ -142,38 +167,25 @@ class UserObject {
         $errorModal.modal('show')
     }
     addOrderHistoryItems(ordersArray) {
-        let $firstAccordionItem = $('#accordion-item-1')
-        this.updateFirstOrderHistoryItem(ordersArray, $firstAccordionItem)
-        this.addRemainingOrderHistoryItems(ordersArray, $firstAccordionItem)
-    }
+        for (let i = 0; i < ordersArray.length; i++) {
+            let $accordionItem = $('<div class="accordion-item" id="accordion-item-' + (i + 1) + '"></div>');
+            let $accordionHeader = $('<h2 class="accordion-header" id="heading-' + (i + 1) + '"></h2>');
+            let $accordionButton = $('<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-' + (i + 1) + '" aria-expanded="true" aria-controls="collapse-' + (i + 1) + '"></button>');
+            let $accordionCollapse = $('<div id="collapse-' + (i + 1) + '" class="accordion-collapse collapse" aria-labelledby="heading-' + (i + 1) + '" data-bs-parent="#order-history-container"></div>');
+            let $accordionBody = $('<div class="accordion-body"></div>');
 
-    updateFirstOrderHistoryItem(ordersArray, $firstAccordionItem) {
-        let date = ordersArray[0].date
-        let totalPrice = ordersArray[0].total
+            let date = ordersArray[i].date;
+            let totalPrice = ordersArray[i].total;
 
-        $firstAccordionItem.find('button').text('Bestelldatum: ' + date)
-        $firstAccordionItem.find('.accordion-body').text('Gesamtpreis : ' + totalPrice)
-    }
+            $accordionButton.text('Bestelldatum: ' + date);
+            $accordionBody.text('Gesamtpreis: ' + totalPrice);
 
-    addRemainingOrderHistoryItems(ordersArray, $firstAccordionItem) {
-        for(let i= 1; i < ordersArray.length; i++){
-            let nextDate = ordersArray[i].date
-            let nextTotalPrice = ordersArray[i].total
-            console.log(nextTotalPrice)
+            $accordionHeader.append($accordionButton);
+            $accordionCollapse.append($accordionBody);
+            $accordionItem.append($accordionHeader);
+            $accordionItem.append($accordionCollapse);
 
-            let $nextAccordionItem = $firstAccordionItem.clone()
-            $nextAccordionItem.attr("id", "accordion-item-" + (i+1))
-            $nextAccordionItem.find('.accordion-button')
-                .attr('data-bs-target', '#collapse' + (i + 1))
-                .attr('aria-controls', 'collapse' + (i + 1))
-                .text('Bestelldatum: ' + nextDate);
-            $nextAccordionItem.find('.accordion-collapse')
-                .attr('id', 'collapse' + (i + 1))
-                .attr('aria-labelledby', 'heading' + (i + 1))
-                .removeClass('show');
-            $nextAccordionItem.find('.accordion-body').text('Gesamtpreis : ' + nextTotalPrice);
-
-            $('#order-history-container').append($nextAccordionItem);
+            $('#order-history-container').append($accordionItem);
         }
     }
 }
